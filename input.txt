@@ -1,0 +1,4 @@
+//First comment
+\*
+  Multiple commentary test
+*/
