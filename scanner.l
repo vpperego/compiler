@@ -44,7 +44,7 @@ letter   [A-Za-z]
 ['].['] {return LIT_CHAR;}
 \".[^"]*\" {return LIT_STRING;}
 
-({letter}|_)({letter}|{digits}|[_ ])* {return TK_IDENTIFIER;}
+[{letter}|_]({letter}|{digits}|[ ]|_)* {return TK_IDENTIFIER;}
 
 "\n"      {++lines;}
 
