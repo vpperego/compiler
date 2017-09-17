@@ -42,10 +42,10 @@ letter   [A-Za-z]
 {digits}+  {return LIT_INTEGER;}
 {digits}+[.]{digits}+  {return LIT_REAL;}
 
-[']({letter}|{digits}|[_ ])['] {return LIT_CHAR;}
-["]({letter}|{digits}|[_ ])*["] {return LIT_STRING;}
+['].['] {return LIT_CHAR;}
+["](.*[^"])["] {return LIT_STRING;}
 
-{letter}({letter}|{digits}|[_ ])* {return TK_IDENTIFIER;}
+({letter}|_)({letter}|{digits}|[_ ])* {return TK_IDENTIFIER;}
 
 "\n"      {++lines;}
 
