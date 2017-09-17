@@ -1,1 +1,3 @@
-double x = 15;
+double minha var = 15;
+x1
+_x
