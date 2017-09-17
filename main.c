@@ -1,4 +1,5 @@
 #include "tokens.h"
+#include "hash.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -6,6 +7,8 @@ int yylex();
 extern char *yytext;
 extern int lines;
 extern FILE *yyin;
+extern HASH_NODE * table[HASH_SIZE];
+
 int isRunning();
 
 int main(int argc, char *argv[]) {
@@ -20,7 +23,8 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "Couldn't open file %s\n", argv[1]);
 		exit(1);
 	}
-
+	hashInit();
+	printf("Hash init complete.\n");
 	while(isRunning()) {
 		token = yylex();
 
@@ -53,15 +57,16 @@ int main(int argc, char *argv[]) {
 			case LIT_CHAR: {fprintf(stderr,"%d. Found Literal Token: %d\n", lines, LIT_CHAR); break;}
 			case LIT_STRING: {fprintf(stderr,"%d. Found Literal Token: %d\n", lines, LIT_STRING); break;}
 
-			case TK_IDENTIFIER: {fprintf(stderr,"%d. Found Identifier Token: %d\n", lines, TK_IDENTIFIER); break;}
+			case TK_IDENTIFIER: {fprintf(stderr,"%d. Found Identifier Token: %d (with value ""%s"")\n", lines, TK_IDENTIFIER,yytext); break;}
 
 			case TOKEN_ERROR: {fprintf(stderr,"%d. Found Error Token: %d\n", lines, TOKEN_ERROR); break;}
-		
-			default: {fprintf(stderr,"%d. Found Operator Token: %d\n", lines, atoi(yytext)); break;}
-		}
 
+			default: {fprintf(stderr,"%d. Found Operator Token:%c (ascii value %d)\n", lines,(char)token,token); break;}
+		}
+		if(token!=TOKEN_ERROR)
+			hashInsert(token,yytext);
 
 	}
-
+	hashPrint();
     return 0;
 }

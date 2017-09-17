@@ -1,13 +1,11 @@
 #include "tokens.h"
-
-#define HASH_SIZE 999
-int myHash() {
-
-    return 0;
-}
+#include "hash.h"
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 void hashInit(void){
-  for (size_t i = 0; i < HASH_SIZE; i++) {
+  for (int i = 0; i < HASH_SIZE; i++) {
       table[i] = 0;
   }
 }
@@ -15,10 +13,10 @@ void hashInit(void){
 int hashAddress(char * text){
   int address = 0;
   int i;
-  for (size_t i = 0; i < strlen(text); i++) {
-    address = (address * text[i]) % HASH_SIZE;
+  for (i = 0; i < strlen(text); i++) {
+    address = (address * text[i]) % HASH_SIZE +1;
   }
-  return address;
+  return address -1;
 }
 
 HASH_NODE * hashInsert(int type, char *text){
@@ -34,5 +32,12 @@ HASH_NODE * hashInsert(int type, char *text){
 }
 
 void hashPrint(){
+  int i;
+  HASH_NODE  * node;
+  for (i = 0; i < HASH_SIZE; i++) {
+      for (node = table[i]; node; node = node->next) {
+        printf("Table[%d] has %s\n",i,node->text );
+      }
+  }
 
 }

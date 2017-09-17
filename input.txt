@@ -1,2 +1,6 @@
-teste
-"teste\"""teste"
+/*
+ double x = 15;
+ if (x < 10)
+  print("HELLO");
+ */
+"string1""string2"

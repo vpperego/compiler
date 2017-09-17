@@ -5,15 +5,14 @@
 int lines=1;
 int running = 1;
 
-
 %}
 digits [0-9]
 letter   [A-Za-z]
 
 %%
 
-"//"(.)* {fprintf(stderr,"Single-line commentary \n");}
-"/*"(.)*"\*" {fprintf(stderr,"Multiple-line commentary \n");}
+"//"(.)* {fprintf(stderr,"Single-line commentary \n"); return TOKEN_ERROR;}
+"/*"(.|\n)*"*/" {fprintf(stderr,"Multiple-line commentary \n"); return TOKEN_ERROR;}
 
 "if"	{return KW_IF;}
 "byte"	{return KW_BYTE;}
@@ -36,14 +35,14 @@ letter   [A-Za-z]
 "&&"	{return OPERATOR_AND;}
 "||"	{return OPERATOR_OR;}
 
-]|[|[*,;:(){}+-/<>=!&$#] {return atoi(yytext);}
+]|[|[*,;:(){}+-/<>=!&$#] {return yytext[0];}
 
 
 {digits}+  {return LIT_INTEGER;}
 {digits}+[.]{digits}+  {return LIT_REAL;}
 
 ['].['] {return LIT_CHAR;}
-["](.*[^"])["] {return LIT_STRING;}
+\".[^"]*\" {return LIT_STRING;}
 
 ({letter}|_)({letter}|{digits}|[_ ])* {return TK_IDENTIFIER;}
 
