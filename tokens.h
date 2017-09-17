@@ -12,7 +12,7 @@
 #define KW_LONG       258
 #define KW_FLOAT      259
 #define KW_DOUBLE     260
-#define KW_WHEN       261
+#define KW_IF	      261
 #define KW_THEN       262
 #define KW_ELSE       263
 #define KW_WHILE      264

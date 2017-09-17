@@ -1,49 +1,55 @@
 %{
 #include "tokens.h"
-int lines=0;
-extern FILE *yyin;
+#include <stdio.h>
+#include <string.h>
+int lines=1;
+int running = 1;
+
+
 %}
 digits [0-9]
 letter   [A-Za-z]
 
 %%
-\n      {fprintf(stderr,"Found newline... Total lines:%d\n", lines);lines++;}
+
 "//"(.)* {fprintf(stderr,"Single-line commentary \n");}
 "/*"(.)*"\*" {fprintf(stderr,"Multiple-line commentary \n");}
 
-"if"	{fprintf(stderr,"Found If Token: %d\n", KW_WHEN);}
-"byte"	{fprintf(stderr,"Found Byte Token: %d\n", KW_BYTE);}
-"short"	{fprintf(stderr,"Found Short Token: %d\n", KW_SHORT);}
-"long"	{fprintf(stderr,"Found Long Token: %d\n", KW_LONG);}
-"float"	{fprintf(stderr,"Found Float Token: %d\n", KW_FLOAT);}
-"double"	{fprintf(stderr,"Found Double Token: %d\n", KW_DOUBLE);}
-"then"	{fprintf(stderr,"Found Then Token: %d\n", KW_THEN);}
-"else"	{fprintf(stderr,"Found Else Token: %d\n", KW_ELSE);}
-"while"	{fprintf(stderr,"Found While Token: %d\n", KW_WHILE);}
-"for"	{fprintf(stderr,"Found For Token: %d\n", KW_FOR);}
-"read"	{fprintf(stderr,"Found Read Token: %d\n", KW_READ);}
-"print"	{fprintf(stderr,"Found Print Token: %d\n", KW_RETURN);}
-"return"	{fprintf(stderr,"Found Return Token: %d\n", KW_PRINT);}
+"if"	{return KW_IF;}
+"byte"	{return KW_BYTE;}
+"short"	{return KW_SHORT;}
+"long"	{return KW_LONG;}
+"float"	{return KW_FLOAT;}
+"double"	{return KW_DOUBLE;}
+"then"	{return KW_THEN;}
+"else"	{return KW_ELSE;}
+"while"	{return KW_WHILE;}
+"for"	{return KW_FOR;}
+"read"	{return KW_READ;}
+"print"	{return KW_RETURN;}
+"return"	{return KW_PRINT;}
 
-"<="	{fprintf(stderr,"Found Operator Token: %d\n", OPERATOR_LE);}
-">="	{fprintf(stderr,"Found Operator Token: %d\n", OPERATOR_GE);}
-"=="	{fprintf(stderr,"Found Operator Token: %d\n", OPERATOR_EQ);}
-"!="	{fprintf(stderr,"Found Operator Token: %d\n", OPERATOR_NE);}
-"&&"	{fprintf(stderr,"Found Operator Token: %d\n", OPERATOR_AND);}
-"||"	{fprintf(stderr,"Found Operator Token: %d\n", OPERATOR_OR);}
+"<="	{return OPERATOR_LE;}
+">="	{return OPERATOR_GE;}
+"=="	{return OPERATOR_EQ;}
+"!="	{return OPERATOR_NE;}
+"&&"	{return OPERATOR_AND;}
+"||"	{return OPERATOR_OR;}
 
-]|[|[*,;:(){}+-/<>=!&$#] {fprintf(stderr,"Found Operator Token: %s\n", yytext);}
+]|[|[*,;:(){}+-/<>=!&$#] {return atoi(yytext);}
 
 
-{digits}+  {fprintf(stderr,"Found Literal Token: %d\n", LIT_INTEGER);}
-{digits}+[.]{digits}+  {fprintf(stderr,"Found Literal Token: %d\n", LIT_REAL);}
+{digits}+  {return LIT_INTEGER;}
+{digits}+[.]{digits}+  {return LIT_REAL;}
 
-['][A-Za-z]['] {fprintf(stderr,"Found Literal Token: %d\n", LIT_CHAR);}
-["][A-Za-z]["] {fprintf(stderr,"Found Literal Token: %d\n", LIT_STRING);}
+[']({letter}|{digits}|[_ ])['] {return LIT_CHAR;}
+["]({letter}|{digits}|[_ ])*["] {return LIT_STRING;}
 
-{letter}({letter}|{digits}|[_ ])* {fprintf(stderr,"Found Identifier Token: %d\n", TK_IDENTIFIER);}
+{letter}({letter}|{digits}|[_ ])* {return TK_IDENTIFIER;}
 
-. {fprintf(stderr,"Found Error Token: %d\n", TOKEN_ERROR);}
+"\n"      {++lines;}
+
+. {return TOKEN_ERROR;}
 
 %%
 
@@ -52,14 +58,13 @@ int getLineNumber(void){
   return lines;
 }
 
+int isRunning(){
+	return running;
+}
+
 int yywrap(void){
+ running = 0;
  return 1;
 }
 
-int main(){
-//  yyin=fopen("input.txt","r");
-
- yylex();
- printf("Lines: %d",getLineNumber());
- return 1;
-}
+#include "main.c"

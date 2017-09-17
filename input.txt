@@ -1,4 +1,2 @@
-//First comment
-\*
-  Multiple commentary test
-*/
+teste
+"teste"
