@@ -39,12 +39,12 @@ letter   [A-Za-z]
 
 
 {digits}+  {return LIT_INTEGER;}
-{digits}+[.]{digits}+  {return LIT_REAL;}
+{digits}+"."{digits}+  {return LIT_REAL;}
 
 \'.\' {return LIT_CHAR;}
-\".[^"]*\" {return LIT_STRING;}
+\"(\\.|[^"])*\" { return LIT_STRING;}
 
-({letter}|_)({letter}|{digits}|[_| ])* {return TK_IDENTIFIER;}
+({letter}|_)({letter}|{digits}|[_ ])* {return TK_IDENTIFIER;}
 
 "\n"      {++lines;}
 
