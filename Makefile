@@ -1,6 +1,5 @@
-
-# etapa1: lex.yy.o main.o
-# 	gcc -o etapa1 lex.yy.o main.o
+ # Filipe Joner
+ # Vinícius Pittigliani Perego
 
 all: etapa1
 

@@ -3,6 +3,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
+* Filipe Joner
+* Vinícius Pittigliani Perego
+*/
 int yylex();
 extern char *yytext;
 extern int lines;
@@ -23,7 +27,8 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "Couldn't open file %s\n", argv[1]);
 		exit(1);
 	}
-	hashInit();
+	
+	initMe();
 	printf("Hash init complete.\n");
 	while(isRunning()) {
 		token = yylex();

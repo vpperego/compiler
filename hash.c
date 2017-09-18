@@ -4,10 +4,21 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+/*
+* Filipe Joner
+* Vinícius Pittigliani Perego
+*/
+
+
+
 void hashInit(void){
   for (int i = 0; i < HASH_SIZE; i++) {
       table[i] = 0;
   }
+}
+
+void initMe(void){
+    hashInit();
 }
 
 int hashAddress(char * text){
