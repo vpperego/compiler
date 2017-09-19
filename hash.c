@@ -33,7 +33,15 @@ int hashAddress(char * text){
 
 HASH_NODE * hashInsert(int type, char *text){
   HASH_NODE *newNode;
+  HASH_NODE *node;
   int address = hashAddress(text);
+
+  for (node = table[address]; node; node = node->next) {
+    if((strcmp(text, node->text)) == 0) {
+      return node;
+    }
+  }
+
   newNode = (HASH_NODE *) calloc(1,sizeof(HASH_NODE));
   newNode->type = type;
   newNode->text = calloc(strlen(text)+1,sizeof(char));
@@ -41,7 +49,7 @@ HASH_NODE * hashInsert(int type, char *text){
   newNode->next = table[address];
   table[address] = newNode;
   return newNode;
-}
+} 
 
 void hashPrint(){
   int i;
