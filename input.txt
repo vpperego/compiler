@@ -1,10 +1,11 @@
-double minha var = 15;
-x1
-_x
-"include teste"
+// dadassda
+// sdadasdsa
+// dasdasasdsda
+//// double minha var = "Jonatan";
+double j = 10;
 /*
-* Filipe Joner
-* Vinícius Pittigliani Perego
-*/
+dsadasdsads
+      int j = 10;
 
-char dude = "vpperego ";
+*/
+double j = 10;

@@ -2,7 +2,7 @@
 #include "tokens.h"
 #include <stdio.h>
 #include <string.h>
-int lines=1;
+int lines=0;
 int running = 1;
 
 %}
@@ -13,7 +13,7 @@ letter   [A-Za-z]
 
 %%
 
-"//"(.)* {fprintf(stderr,"Single-line commentary \n"); ++lines; return TOKEN_ERROR;}
+"//"(.)* {return TOKEN_ERROR;}
 "/*"	{BEGIN(COMMENT);}
 
 "if"	{return KW_IF;}
