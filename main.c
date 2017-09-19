@@ -12,6 +12,7 @@ extern char *yytext;
 extern int lines;
 extern FILE *yyin;
 extern HASH_NODE * table[HASH_SIZE];
+extern int getLineNumber(void);
 
 int isRunning();
 
@@ -27,7 +28,7 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr, "Couldn't open file %s\n", argv[1]);
 		exit(1);
 	}
-	
+
 	initMe();
 	printf("Hash init complete.\n");
 	while(isRunning()) {
@@ -73,5 +74,6 @@ int main(int argc, char *argv[]) {
 
 	}
 	hashPrint();
+	printf("End. Total input lines:%d\n",getLineNumber() );
     return 0;
 }

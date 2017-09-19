@@ -11,8 +11,8 @@ letter   [A-Za-z]
 
 %%
 
-"//"(.)* {fprintf(stderr,"Single-line commentary \n"); return TOKEN_ERROR;}
-"/*"(.|\n)*"*/" {fprintf(stderr,"Multiple-line commentary \n"); return TOKEN_ERROR;}
+"//"(.)* {fprintf(stderr,"Single-line commentary \n"); ++lines; return TOKEN_ERROR;}
+"/*"(.|\n)*"*/" {fprintf(stderr,"Multiple-line commentary \n"); ++lines; return TOKEN_ERROR;}
 
 "if"	{return KW_IF;}
 "byte"	{return KW_BYTE;}
