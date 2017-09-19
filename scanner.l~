@@ -2,17 +2,19 @@
 #include "tokens.h"
 #include <stdio.h>
 #include <string.h>
-int lines=1;
+int lines=0;
 int running = 1;
 
 %}
 digits [0-9]
 letter   [A-Za-z]
 
+%x COMMENT
+
 %%
 
-"//"(.)* {fprintf(stderr,"Single-line commentary \n"); ++lines; return TOKEN_ERROR;}
-"/*"(.|\n)*"*/" {fprintf(stderr,"Multiple-line commentary \n"); ++lines; return TOKEN_ERROR;}
+"//"(.)* {return TOKEN_ERROR;}
+"/*"	{BEGIN(COMMENT);}
 
 "if"	{return KW_IF;}
 "byte"	{return KW_BYTE;}
@@ -49,6 +51,12 @@ letter   [A-Za-z]
 "\n"      {++lines;}
 
 . {return TOKEN_ERROR;}
+
+
+<COMMENT>"\n" { ++lines; }
+<COMMENT>"*/" {BEGIN(INITIAL);}
+<COMMENT>.
+
 
 %%
 

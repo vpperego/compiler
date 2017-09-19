@@ -13,7 +13,7 @@ letter   [A-Za-z]
 
 %%
 
-"//"(.)* {return TOKEN_ERROR;}
+"//"(.)* 
 "/*"	{BEGIN(COMMENT);}
 
 "if"	{return KW_IF;}
@@ -27,8 +27,8 @@ letter   [A-Za-z]
 "while"	{return KW_WHILE;}
 "for"	{return KW_FOR;}
 "read"	{return KW_READ;}
-"print"	{return KW_RETURN;}
-"return"	{return KW_PRINT;}
+"print"	{return KW_PRINT;}
+"return"	{return KW_RETURN;}
 
 "<="	{return OPERATOR_LE;}
 ">="	{return OPERATOR_GE;}
@@ -46,10 +46,11 @@ letter   [A-Za-z]
 \'.\' {return LIT_CHAR;}
 \"(\\.|[^"])*\" { return LIT_STRING;}
 
-({letter}|_)({letter}|{digits}|[_ ])* {return TK_IDENTIFIER;}
+({letter}|_)({letter}|{digits}|[_ ])*({letter}|{digits}) {return TK_IDENTIFIER;}
 
 "\n"      {++lines;}
-
+"\t"
+" "
 . {return TOKEN_ERROR;}
 
 
