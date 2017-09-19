@@ -9,12 +9,10 @@ int running = 1;
 digits [0-9]
 letter   [A-Za-z]
 
-%x COMMENT
-
 %%
 
 "//"(.)* {fprintf(stderr,"Single-line commentary \n"); ++lines; return TOKEN_ERROR;}
-"/*"	{BEGIN(COMMENT);}
+"/*"(.|\n)*"*/" {fprintf(stderr,"Multiple-line commentary \n"); ++lines; return TOKEN_ERROR;}
 
 "if"	{return KW_IF;}
 "byte"	{return KW_BYTE;}
@@ -51,12 +49,6 @@ letter   [A-Za-z]
 "\n"      {++lines;}
 
 . {return TOKEN_ERROR;}
-
-
-<COMMENT>"\n" { ++lines; }
-<COMMENT>"*/" {BEGIN(INITIAL);}
-<COMMENT>.
-
 
 %%
 

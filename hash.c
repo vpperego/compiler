@@ -12,7 +12,8 @@
 
 
 void hashInit(void){
-  for (int i = 0; i < HASH_SIZE; i++) {
+  int i = 0;
+  for (i = 0; i < HASH_SIZE; i++) {
       table[i] = 0;
   }
 }
