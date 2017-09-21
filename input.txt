@@ -5,7 +5,9 @@
 /*
             dsadasdsads
                   int j = 10;
-dsadsadas   dsadsadsa       rewrew  
+dsadsadas   dsadsadsa       rewrew
 */
 double j = 10;
 double kp = 30;
+double minha var_ = 15;
+double _x_ = 15;
