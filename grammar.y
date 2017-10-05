@@ -37,15 +37,63 @@
 
 %%
 
-program:
- program expr '\n' { printf("%d\n", $2); }
- |
- ;
-expr:
- KW_SHORT { $$ = $1; }
- | expr '+' expr { $$ = $1 + $3; }
- | expr '-' expr { $$ = $1 - $3; }
- ;
+/* Exemplos tirados da aula do professor*/
+program : decl
+
+decl : dec decl
+
+dec : vardec
+    | fundec
+    ;
+
+vardec : TK_IDENTIFIER':' type '=' value
+    ;
+    
+fundec : KW_BYTE TK_IDENTIFIER '(' listArgs ')' cmd
+    ;
+
+cmd : TK_IDENTIFIER '=' expr
+	| block
+	;
+
+block : '{' listCmd '}'
+
+listCmd : cmd listCmd
+    |
+    ;
+
+type : KW_BYTE
+    | KW_SHORT
+    | KW_LONG
+    | KW_FLOAT
+    ;
+
+/* inicio nosso */
+
+expr :
+    KW_SHORT { $$ = $1; }
+    | expr '+' expr { $$ = $1 + $3; }
+    | expr '-' expr { $$ = $1 - $3; }
+    | expr '*' expr { $$ = $1 * $3; }
+    | expr '/' expr { $$ = $1 / $3; }
+    | expr '&&' expr    
+    | '(' expr ')'
+    | expr OPERATOR_LE expr
+    | expr OPERATOR_GE expr
+    | expr OPERATOR_EQ expr
+    | expr OPERATOR_NE expr
+    | expr OPERATOR_AND expr
+    | expr OPERATOR_OR expr
+    | TK_IDENTIFIER '(' listArgs  ')'
+    | TK_IDENTIFIER '[' expr ']'
+    | TK_IDENTIFIER
+    | LIT_INTEGER   { $$ = $1; }
+    | LIT_REAL  { $$ = $1; }
+    ;
+
+listArgs : arg listArgs
+    | 
+    ;
 
 
 %%
