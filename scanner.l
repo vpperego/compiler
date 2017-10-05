@@ -1,5 +1,8 @@
 %{
-#include "tokens.h"
+
+#include <stdlib.h>
+void yyerror(char *);
+#include "y.tab.h"
 #include <stdio.h>
 #include <string.h>
 int lines=0;

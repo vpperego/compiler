@@ -1,4 +1,4 @@
-#include "tokens.h"
+#include "y.tab.h"
 #include "hash.h"
 #include <string.h>
 #include <stdlib.h>
@@ -49,7 +49,7 @@ HASH_NODE * hashInsert(int type, char *text){
   newNode->next = table[address];
   table[address] = newNode;
   return newNode;
-} 
+}
 
 void hashPrint(){
   int i;
