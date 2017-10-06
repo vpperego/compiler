@@ -38,18 +38,22 @@
 %%
 
 /* Exemplos tirados da aula do professor*/
-program : decl
+program : dec
 
-decl : dec decl
-
-dec : vardec
+dec : expr
     | fundec
+    | vardec
     ;
 
 vardec : TK_IDENTIFIER':' type '=' value
     ;
-    
-fundec : KW_BYTE TK_IDENTIFIER '(' listArgs ')' cmd
+value: LIT_INTEGER
+    | LIT_REAL
+    | LIT_CHAR
+    | LIT_STRING
+
+fundec : type TK_IDENTIFIER '(' listArgs ')' cmd
+    | type TK_IDENTIFIER '('  ')' cmd
     ;
 
 cmd : TK_IDENTIFIER '=' expr
@@ -76,7 +80,9 @@ expr :
     | expr '-' expr { $$ = $1 - $3; }
     | expr '*' expr { $$ = $1 * $3; }
     | expr '/' expr { $$ = $1 / $3; }
-    | expr '&&' expr    
+    | expr '<' expr
+    | expr '>' expr
+    | '!' expr
     | '(' expr ')'
     | expr OPERATOR_LE expr
     | expr OPERATOR_GE expr
@@ -91,10 +97,12 @@ expr :
     | LIT_REAL  { $$ = $1; }
     ;
 
-listArgs : arg listArgs
-    | 
+listArgs : arg ',' listArgs
+    | arg
     ;
 
+arg: TK_IDENTIFIER ':' type
+  ;
 
 %%
 
