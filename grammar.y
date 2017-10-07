@@ -80,8 +80,11 @@ fundec : '(' type ')' TK_IDENTIFIER '(' listArgs ')' block
 block : '{' listCmd '}'
     ;
 
-listCmd : cmd ';' listCmd
-    | cmd
+listCmd : cmd tailListCmd
+    ;
+
+tailListCmd : ';' cmd tailListCmd
+    |
     ;
 
 cmd : TK_IDENTIFIER '=' expr
@@ -96,10 +99,10 @@ cmd : TK_IDENTIFIER '=' expr
     |
 	;
 
-listPrint : printable ',' listPrint
+listPrint : expr tailListPrint
     ;
 
-printable : expr
+tailListPrint : ',' tailListPrint
     |
     ;
 
@@ -132,7 +135,11 @@ expr : expr '+' expr { $$ = $1 + $3; }
     | LIT_STRING
     ;
 
-listArgs : arg ',' listArgs
+listArgs : arg tailListArgs
+    |
+    ;
+
+tailListArgs : ',' arg tailListArgs
     |
     ;
 
