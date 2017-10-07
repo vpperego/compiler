@@ -49,7 +49,7 @@
 %left '+' '-'
 %left '*' '/'
 
-%start prog
+%start program
 
 %%
 
