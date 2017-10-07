@@ -54,9 +54,14 @@
 %%
 
 /* Exemplos tirados da aula do professor*/
-program : dec
+program : listdecl
+    ;
 
-dec : expr
+listdecl : decl listdecl
+    |
+    ;
+
+decl : expr
     | fundec
     | vardec
     ;
@@ -80,11 +85,8 @@ fundec : '(' type ')' TK_IDENTIFIER '(' listArgs ')' block
 block : '{' listCmd '}'
     ;
 
-listCmd : cmd tailListCmd
-    ;
-
-tailListCmd : ';' cmd tailListCmd
-    |
+listCmd : cmd ';' listCmd
+    | cmd
     ;
 
 cmd : TK_IDENTIFIER '=' expr
@@ -99,11 +101,8 @@ cmd : TK_IDENTIFIER '=' expr
     |
 	;
 
-listPrint : expr tailListPrint
-    ;
-
-tailListPrint : ',' tailListPrint
-    |
+listPrint : expr ',' listPrint
+    | expr
     ;
 
 type : KW_BYTE
@@ -114,10 +113,10 @@ type : KW_BYTE
     ;
 
 
-expr : expr '+' expr { $$ = $1 + $3; }
-    | expr '-' expr { $$ = $1 - $3; }
-    | expr '*' expr { $$ = $1 * $3; }
-    | expr '/' expr { $$ = $1 / $3; }
+expr : expr '+' expr 
+    | expr '-' expr 
+    | expr '*' expr 
+    | expr '/' expr 
     | expr '<' expr
     | expr '>' expr
     | '!' expr
@@ -135,11 +134,8 @@ expr : expr '+' expr { $$ = $1 + $3; }
     | LIT_STRING
     ;
 
-listArgs : arg tailListArgs
-    |
-    ;
-
-tailListArgs : ',' arg tailListArgs
+listArgs : arg ',' listArgs
+    | arg
     |
     ;
 
@@ -151,8 +147,7 @@ arg: TK_IDENTIFIER ':' type
 
 %%
 
-void yyerror(char *s) {
- fprintf(stderr, "%s\n", s);
- return 0;
+int yyerror(char *s) {
+ fprintf(stderr, "Problema! ERRO linha = %d\n", getLineNumber());
+ return TOKEN_ERROR;
 }
-

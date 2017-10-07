@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
 	int token = 0;
 
 	if(argc < 2) {
-		fprintf(stderr, "Must execute ./etapa1 <inputFile> \n");
+		fprintf(stderr, "Must execute ./etapa2 <inputFile> \n");
 		exit(1);
 	}
 

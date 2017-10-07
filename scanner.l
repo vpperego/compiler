@@ -59,7 +59,8 @@ letter   [A-Za-z]
 \'.\' {return LIT_CHAR;}
 \"(\\.|[^"])*\" { return LIT_STRING;}
 
-({letter}|_)(({letter}|{digits}|[_ ])({letter}|{digits}|[_]))* {return TK_IDENTIFIER;}
+({letter}|_)([a-zA-Z_]([a-zA-Z_0-9 ]*[a-zA-Z_0-9])* {return TK_IDENTIFIER;}
+
 
 "\n"      {++lines;}
 "\t"
