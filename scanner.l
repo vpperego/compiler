@@ -1,12 +1,22 @@
 %{
 
-#include <stdlib.h>
-void yyerror(char *);
+#define SYMBOL_LIT_INT 1
+#define SYMBOL_LIT_REAL 2
+#define SYMBOL_LIT_CHAR 3
+#define SYMBOL_LIT_STRING 4
+#define SYMBOL_IDENTIFIER 7
+
+
 #include "y.tab.h"
 #include <stdio.h>
-#include <string.h>
+
+
+void yyerror(char *);
+
+
 int lines=0;
 int running = 1;
+int yyparse();
 
 %}
 digits [0-9]
