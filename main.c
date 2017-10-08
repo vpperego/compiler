@@ -36,6 +36,6 @@ int main(int argc, char *argv[]) {
 		yyparse();
 	}
 	hashPrint();
-	printf("Congratulations, Syntax is correct!s");
+	printf("Congratulations, Syntax is correct!\n");
     return 0;
 }

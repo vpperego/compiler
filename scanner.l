@@ -8,6 +8,7 @@
 
 
 #include "y.tab.h"
+#include "hash.h"
 #include <stdio.h>
 
 
@@ -53,13 +54,13 @@ letter   [A-Za-z]
 ]|[|[*,;:(){}+-/<>=!&$#] {return yytext[0];}
 
 
-{digits}+  {return LIT_INTEGER;}
-{digits}+"."{digits}+  {return LIT_REAL;}
+{digits}+  {hashInsert(SYMBOL_LIT_INT, yytext);return LIT_INTEGER;}
+{digits}+"."{digits}+  {hashInsert(SYMBOL_LIT_REAL,yytext);return LIT_REAL;}
 
-\'.\' {return LIT_CHAR;}
-\"(\\.|[^"])*\" { return LIT_STRING;}
+\'.\' {hashInsert(SYMBOL_LIT_REAL, yytext);return LIT_CHAR;}
+\"(\\.|[^"])*\" { hashInsert(SYMBOL_LIT_STRING, yytext);return LIT_STRING;}
 
-({letter}|_)([a-zA-Z_])([a-zA-Z_0-9 ]*[a-zA-Z_0-9])* {return TK_IDENTIFIER;}
+[a-zA-Z_]([a-zA-Z_0-9 ]*[a-zA-Z_0-9])* {hashInsert(SYMBOL_IDENTIFIER, yytext);return TK_IDENTIFIER;}
 
 
 "\n"      {++lines;}
@@ -88,5 +89,3 @@ int yywrap(void){
  running = 0;
  return 1;
 }
-
-

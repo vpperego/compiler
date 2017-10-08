@@ -8,7 +8,7 @@
 	#include <stdlib.h>
 	#include <string.h>
 	#include "hash.h"
-	
+
 	int yylex();
 	int yyerror(char *message);
 	extern int getLineNumber();
@@ -44,7 +44,7 @@
 
 %token TOKEN_ERROR
 
-%left '<' '>'  
+%left '<' '>'
 %left '!' OPERATOR_LE OPERATOR_GE OPERATOR_EQ OPERATOR_NE OPERATOR_AND OPERATOR_OR
 %left '+' '-'
 %left '*' '/'
@@ -66,7 +66,7 @@ decl : expr
     | vardec
     ;
 
-vardec : TK_IDENTIFIER ':' type '=' value ';'
+vardec : TK_IDENTIFIER ':' type '=' value ';'     
     | TK_IDENTIFIER ':' type '['LIT_INTEGER']' init';'
     ;
 
@@ -113,10 +113,10 @@ type : KW_BYTE
     ;
 
 
-expr : expr '+' expr 
-    | expr '-' expr 
-    | expr '*' expr 
-    | expr '/' expr 
+expr : expr '+' expr
+    | expr '-' expr
+    | expr '*' expr
+    | expr '/' expr
     | expr '<' expr
     | expr '>' expr
     | '!' expr
