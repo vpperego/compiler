@@ -59,7 +59,7 @@ letter   [A-Za-z]
 \'.\' {return LIT_CHAR;}
 \"(\\.|[^"])*\" { return LIT_STRING;}
 
-({letter}|_)([a-zA-Z_]([a-zA-Z_0-9 ]*[a-zA-Z_0-9])* {return TK_IDENTIFIER;}
+({letter}|_)([a-zA-Z_])([a-zA-Z_0-9 ]*[a-zA-Z_0-9])* {return TK_IDENTIFIER;}
 
 
 "\n"      {++lines;}
@@ -89,4 +89,4 @@ int yywrap(void){
  return 1;
 }
 
-#include "main.c"
+
