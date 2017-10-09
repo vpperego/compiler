@@ -54,7 +54,7 @@ letter   [A-Za-z]
 ]|[|[*,;:(){}+-/<>=!&$#] {return yytext[0];}
 
 
-{digits}+  {hashInsert(SYMBOL_LIT_INT, yytext);return LIT_INTEGER;}
+{digits}+  {hashInsert(SYMBOL_LIT_INT, yytext);yylval = atoi(yytext);return LIT_INTEGER;}
 {digits}+"."{digits}+  {hashInsert(SYMBOL_LIT_REAL,yytext);return LIT_REAL;}
 
 \'.\' {hashInsert(SYMBOL_LIT_REAL, yytext);return LIT_CHAR;}

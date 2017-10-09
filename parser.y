@@ -67,7 +67,7 @@ decl : expr
     ;
 
 vardec : TK_IDENTIFIER ':' type '=' value ';'
-    | TK_IDENTIFIER ':' type '['LIT_INTEGER']' init';'
+    | TK_IDENTIFIER ':' type '['LIT_INTEGER']' init ';'   {if($5 <= 0) yyerror(NULL);}
     ;
 
 value: LIT_INTEGER
@@ -91,7 +91,7 @@ listCmd : cmd ';' listCmd
     ;
 
 cmd : TK_IDENTIFIER '=' expr
-    | TK_IDENTIFIER '[' expr ']' '=' expr
+    | TK_IDENTIFIER '[' expr ']' '=' expr 
     | KW_READ '>' TK_IDENTIFIER
     | KW_PRINT listPrint
     | KW_RETURN expr

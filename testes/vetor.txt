@@ -1,0 +1,13 @@
+/*
+    Testar expressoes com vetor
+*/
+
+
+v: long[10] 0 0 0 0 0 0 0 0 0 0;
+v: long[10] 0 0 0 0 0 0 0 0 0 0;
+
+i: long[33];
+
+(long) incVetor(){
+  v[4-3] = v[10-5];
+}

@@ -5,4 +5,4 @@
 //(short) exemplo (a:long,b:long) {}
 //
 //
-(short) func (a:long,b:long,) {}
+(short) func (a:long,) {}

@@ -1,0 +1,23 @@
+/*
+	Testa chamada de função
+*/
+
+
+a: short = 0;
+
+(short) func (a:long,b:long) {}
+
+(short) funcB (x:short) {}
+
+
+(long) main()
+
+  {
+		a = func(15,14);
+		jj =	funcB(55);
+		while(x){
+			while(y){
+				z = 10
+			}
+		}
+	}

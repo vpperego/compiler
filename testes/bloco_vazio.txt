@@ -1,0 +1,9 @@
+/*
+  Testa funções com blocos vazios
+*/
+
+(byte) main (){
+  a = 10;
+  b = a + y
+
+}
