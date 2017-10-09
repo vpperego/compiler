@@ -1,0 +1,8 @@
+/*
+	Testa parametros de funcoes errados (e.g.,um parametro so e virgula)
+*/
+//
+//(short) exemplo (a:long,b:long) {}
+//
+//
+(short) func (a:long,b:long,) {}
