@@ -44,6 +44,10 @@
 
 %token TOKEN_ERROR
 
+%nonassoc KW_THEN
+%nonassoc KW_ELSE
+
+
 %left '<' '>'
 %left '!' OPERATOR_LE OPERATOR_GE OPERATOR_EQ OPERATOR_NE OPERATOR_AND OPERATOR_OR
 %left '+' '-'
@@ -91,7 +95,7 @@ listCmd : cmd ';' listCmd
     ;
 
 cmd : TK_IDENTIFIER '=' expr
-    | TK_IDENTIFIER '[' expr ']' '=' expr 
+    | TK_IDENTIFIER '[' expr ']' '=' expr
     | KW_READ '>' TK_IDENTIFIER
     | KW_PRINT listPrint
     | KW_RETURN expr
@@ -150,5 +154,4 @@ arg: TK_IDENTIFIER ':' type
 int yyerror(char *s) {
  fprintf(stderr, "Problema! ERRO linha = %d\n", getLineNumber());
  exit(3);
- return TOKEN_ERROR;
 }
