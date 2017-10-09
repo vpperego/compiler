@@ -66,7 +66,7 @@ decl : expr
     | vardec
     ;
 
-vardec : TK_IDENTIFIER ':' type '=' value ';'     
+vardec : TK_IDENTIFIER ':' type '=' value ';'
     | TK_IDENTIFIER ':' type '['LIT_INTEGER']' init';'
     ;
 
@@ -80,6 +80,7 @@ init : value init
     ;
 
 fundec : '(' type ')' TK_IDENTIFIER '(' listArgs ')' block
+    | '(' type ')' TK_IDENTIFIER '('  ')' block
     ;
 
 block : '{' listCmd '}'
@@ -136,7 +137,6 @@ expr : expr '+' expr
 
 listArgs : arg ',' listArgs
     | arg
-    |
     ;
 
 arg: TK_IDENTIFIER ':' type
@@ -149,5 +149,6 @@ arg: TK_IDENTIFIER ':' type
 
 int yyerror(char *s) {
  fprintf(stderr, "Problema! ERRO linha = %d\n", getLineNumber());
+ exit(3);
  return TOKEN_ERROR;
 }

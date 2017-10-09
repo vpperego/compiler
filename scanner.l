@@ -15,7 +15,7 @@
 void yyerror(char *);
 
 
-int lines=0;
+int lines=1;
 int running = 1;
 int yyparse();
 
