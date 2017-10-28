@@ -129,21 +129,21 @@ expr : expr '+' expr    {$$ = astCreate(AST_ADD,0,$1,$3,0,0);}
     | expr '-' expr     {$$ = astCreate(AST_SUB,0,$1,$3,0,0);}
     | expr '*' expr     {$$ = astCreate(AST_MUL,0,$1,$3,0,0);}
     | expr '/' expr     {$$ = astCreate(AST_DIV,0,$1,$3,0,0);}
-    | expr '<' expr
-    | expr '>' expr
+    | expr '<' expr     {$$ = astCreate(AST_LESS,0,$1,$3,0,0);}
+    | expr '>' expr     {$$ = astCreate(AST_MORE,0,$1,$3,0,0);}
     | '!' expr          {$$ = astCreate(AST_NOT,0,$2,0,0,0);}
-    | '(' expr ')'      {$$ = astCreate(AST_PARENTHESES,0,$1,0,0,0);}
-    | expr OPERATOR_LE expr
-    | expr OPERATOR_GE expr
-    | expr OPERATOR_EQ expr
-    | expr OPERATOR_NE expr
-    | expr OPERATOR_AND expr
-    | expr OPERATOR_OR expr
+    | '(' expr ')'      {$$ = astCreate(AST_PARENTHESES,0,$2,0,0,0);}
+    | expr OPERATOR_LE expr       {$$ = astCreate(OPERATOR_LE,0,$1,$3,0,0);}
+    | expr OPERATOR_GE expr        {$$ = astCreate(OPERATOR_GE,0,$1,$3,0,0);}
+    | expr OPERATOR_EQ expr         {$$ = astCreate(OPERATOR_EQ,0,$1,$3,0,0);}
+    | expr OPERATOR_NE expr         {$$ = astCreate(OPERATOR_NE,0,$1,$3,0,0);}
+    | expr OPERATOR_AND expr       {$$ = astCreate(OPERATOR_AND,0,$1,$3,0,0);}
+    | expr OPERATOR_OR expr       {$$ = astCreate(OPERATOR_OR,0,$1,$3,0,0);}
     | TK_IDENTIFIER '(' listArgs  ')'
     | TK_IDENTIFIER '[' expr ']'
     | TK_IDENTIFIER
     | value
-    | LIT_STRING
+    | LIT_STRING            {$$ = astCreate(AST_VALUE,yylval.symbol,$1,0,0,0);}
     ;
 
 listArgs : arg ',' listArgs

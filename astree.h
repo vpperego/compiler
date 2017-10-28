@@ -10,9 +10,10 @@
 #define AST_SUB 2
 #define AST_MUL 3
 #define AST_DIV 4
-#define AST_NOT 5
-#define AST_PARENTHESES 6
-
+#define AST_LESS 5
+#define AST_MORE 6
+#define AST_NOT 7
+#define AST_PARENTHESES 8
 typedef struct ast_node{
   int type;
   HASH_NODE * symbol;

@@ -58,7 +58,7 @@ letter   [A-Za-z]
 {digits}+"."{digits}+  {hashInsert(SYMBOL_LIT_REAL,yytext);return LIT_REAL;}
 
 \'.\' {hashInsert(SYMBOL_LIT_REAL, yytext);return LIT_CHAR;}
-\"(\\.|[^"])*\" { hashInsert(SYMBOL_LIT_STRING, yytext);return LIT_STRING;}
+\"(\\.|[^"])*\" {yylval.symbol =  hashInsert(SYMBOL_LIT_STRING, yytext);return LIT_STRING;}
 
 [a-zA-Z_]([a-zA-Z_0-9 ]*[a-zA-Z_0-9])* {hashInsert(SYMBOL_IDENTIFIER, yytext);return TK_IDENTIFIER;}
 
