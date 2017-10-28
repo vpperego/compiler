@@ -1,3 +1,6 @@
+#ifndef HASH_H
+#define HASH_H
+
 #define HASH_SIZE 999
 /*
 * Filipe Joner
@@ -15,3 +18,5 @@ HASH_NODE * table[HASH_SIZE];
 void initMe(void);
 HASH_NODE * hashInsert(int type, char *text);
 void hashPrint();
+
+#endif

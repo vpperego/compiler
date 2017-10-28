@@ -7,13 +7,19 @@
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include <string.h>
-	#include "hash.h"
+  #include "astree.h"
+  #include "hash.h"
 
 	int yylex();
 	int yyerror(char *message);
 	extern int getLineNumber();
 
 %}
+
+%union{
+  AST * ast;
+  HASH_NODE * symbol;
+}
 
 %token KW_BYTE
 %token KW_SHORT
@@ -71,7 +77,7 @@ decl : expr
     ;
 
 vardec : TK_IDENTIFIER ':' type '=' value ';'
-    | TK_IDENTIFIER ':' type '['LIT_INTEGER']' init ';'   {if($5 <= 0) yyerror(NULL);}
+    | TK_IDENTIFIER ':' type '['LIT_INTEGER']' init ';'
     ;
 
 value: LIT_INTEGER
