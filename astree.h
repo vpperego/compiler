@@ -6,6 +6,13 @@
 #include "hash.h"
 #define MAX_SONS 4
 
+#define AST_ADD 1
+#define AST_SUB 2
+#define AST_MUL 3
+#define AST_DIV 4
+#define AST_NOT 5
+#define AST_PARENTHESES 6
+
 typedef struct ast_node{
   int type;
   HASH_NODE * symbol;

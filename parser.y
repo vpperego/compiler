@@ -53,6 +53,7 @@
 %nonassoc KW_THEN
 %nonassoc KW_ELSE
 
+%type <ast> expr
 
 %left '<' '>'
 %left '!' OPERATOR_LE OPERATOR_GE OPERATOR_EQ OPERATOR_NE OPERATOR_AND OPERATOR_OR
@@ -124,14 +125,14 @@ type : KW_BYTE
     ;
 
 
-expr : expr '+' expr
-    | expr '-' expr
-    | expr '*' expr
-    | expr '/' expr
+expr : expr '+' expr    {$$ = astCreate(AST_ADD,0,$1,$3,0,0);}
+    | expr '-' expr     {$$ = astCreate(AST_SUB,0,$1,$3,0,0);}
+    | expr '*' expr     {$$ = astCreate(AST_MUL,0,$1,$3,0,0);}
+    | expr '/' expr     {$$ = astCreate(AST_DIV,0,$1,$3,0,0);}
     | expr '<' expr
     | expr '>' expr
-    | '!' expr
-    | '(' expr ')'
+    | '!' expr          {$$ = astCreate(AST_NOT,0,$2,0,0,0);}
+    | '(' expr ')'      {$$ = astCreate(AST_PARENTHESES,0,$1,0,0,0);}
     | expr OPERATOR_LE expr
     | expr OPERATOR_GE expr
     | expr OPERATOR_EQ expr
