@@ -6,30 +6,36 @@
 #include "hash.h"
 #define MAX_SONS 4
 
-#define AST_ADD 1
-#define AST_SUB 2
-#define AST_MUL 3
-#define AST_DIV 4
-#define AST_LESS 5
-#define AST_MORE 6
-#define AST_NOT 7
-#define AST_PARENTHESES 8
-#define AST_FUNC 9
-#define AST_ARRAY 10
-#define AST_ATRIB 11
-#define AST_ATRIB_ARRAY 12
-#define AST_READ 13
-#define AST_PRINT 14
-#define AST_RETURN 15
-#define AST_IF 16
-#define AST_IF_ELSE 17
-#define AST_WHILE 18
-#define AST_BLOCK 19
-#define AST_LIST_PARAM 20
-#define AST_PARAM 21
-#define AST_ARG_ID 22
-#define AST_LIST_ARG 23
-#define AST_ARG 24
+enum AST_TYPE{
+  AST_ADD,
+  AST_SUB,
+  AST_MUL,
+  AST_DIV,
+  AST_LESS,
+  AST_MORE,
+  AST_NOT,
+  AST_PARENTHESES,
+  AST_FUNC,
+  AST_ARRAY,
+  AST_ATRIB,
+  AST_ATRIB_ARRAY,
+  AST_READ,
+  AST_PRINT,
+  AST_RETURN,
+  AST_IF,
+  AST_IF_ELSE,
+  AST_WHILE,
+  AST_BLOCK,
+  AST_LIST_PARAM,
+  AST_PARAM,
+  AST_ARG_ID,
+  AST_LIST_ARG,
+  AST_ARG,
+  AST_START,
+  AST_VARDEC,
+  AST_FUNDEC,
+  AST_LIST_CMD
+  };
 
 
 typedef struct ast_node{

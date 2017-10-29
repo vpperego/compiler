@@ -53,6 +53,11 @@
 %nonassoc KW_THEN
 %nonassoc KW_ELSE
 
+%type <ast> program
+%type <ast> listdecl
+%type <ast> decl
+%type <ast> fundec
+%type <ast> vardec
 %type <ast> expr
 %type <ast> cmd
 %type <ast> block
@@ -61,6 +66,7 @@
 %type <ast> listArgs
 %type <ast> type
 %type <ast> arg
+%type <ast> listCmd
 
 
 %left '<' '>'
@@ -73,20 +79,20 @@
 %%
 
 /* Exemplos tirados da aula do professor*/
-program : listdecl
+program : listdecl      {$$ = astCreate(AST_START,0,$1,0,0,0);}
     ;
 
-listdecl : decl listdecl
-    |
+listdecl : decl listdecl  {$$ = $1;}
+    |         {$$ = 0;}
     ;
 
-decl : expr
-    | fundec
-    | vardec
+decl : expr       {$$ = $1;}
+    | fundec      {$$ = $1;}
+    | vardec      {$$ = $1;}
     ;
 
-vardec : TK_IDENTIFIER ':' type '=' value ';'
-    | TK_IDENTIFIER ':' type '['LIT_INTEGER']' init ';'
+vardec : TK_IDENTIFIER ':' type '=' value ';'    {$$ = astCreate(AST_VARDEC,yylval.symbol,$3,0,0,0);}
+    | TK_IDENTIFIER ':' type '['LIT_INTEGER']' init ';'   {$$ = astCreate(LIT_REAL,yylval.symbol,0,0,0,0);}
     ;
 
 value: LIT_INTEGER      {$$ = astCreate(LIT_INTEGER,yylval.symbol,0,0,0,0);}
@@ -98,15 +104,15 @@ init : value init
     |
     ;
 
-fundec : '(' type ')' TK_IDENTIFIER '(' listArgs ')' block
-    | '(' type ')' TK_IDENTIFIER '('  ')' block
+fundec : '(' type ')' TK_IDENTIFIER '(' listArgs ')' block    {$$ = astCreate(AST_FUNDEC,yylval.symbol,$2,$6,$8,0);}
+    | '(' type ')' TK_IDENTIFIER '('  ')' block               {$$ = astCreate(AST_FUNDEC,yylval.symbol,$2,$7,0,0);}
     ;
 
-block : '{' listCmd '}'
+block : '{' listCmd '}'    {$$ = astCreate(AST_BLOCK,0,$2,0,0,0);}
     ;
 
-listCmd : cmd ';' listCmd
-    | cmd
+listCmd : cmd ';' listCmd   {$$ = astCreate(AST_LIST_CMD,0,$1,$3,0,0);}
+    | cmd                   {$$ = $1;}
     ;
 
 cmd : TK_IDENTIFIER '=' expr      {$$ = astCreate(AST_ATRIB,yylval.symbol,$3,0,0,0);}
