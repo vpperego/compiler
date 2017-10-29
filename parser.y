@@ -54,6 +54,8 @@
 %nonassoc KW_ELSE
 
 %type <ast> expr
+%type <ast> cmd
+%type <ast> block
 
 %left '<' '>'
 %left '!' OPERATOR_LE OPERATOR_GE OPERATOR_EQ OPERATOR_NE OPERATOR_AND OPERATOR_OR
@@ -101,16 +103,16 @@ listCmd : cmd ';' listCmd
     | cmd
     ;
 
-cmd : TK_IDENTIFIER '=' expr
-    | TK_IDENTIFIER '[' expr ']' '=' expr
-    | KW_READ '>' TK_IDENTIFIER
-    | KW_PRINT listPrint
-    | KW_RETURN expr
-    | KW_IF '(' expr ')' KW_THEN cmd
-    | KW_IF '(' expr ')' KW_THEN cmd KW_ELSE cmd
-    | KW_WHILE '(' expr ')' cmd
-	| block
-    |
+cmd : TK_IDENTIFIER '=' expr      {$$ = astCreate(AST_ATRIB,yylval.symbol,$3,0,0,0);}
+    | TK_IDENTIFIER '[' expr ']' '=' expr {$$ = astCreate(AST_ATRIB_ARRAY,yylval.symbol,$3,0,0,0);}
+    | KW_READ '>' TK_IDENTIFIER   {$$ = astCreate(AST_READ,yylval.symbol,0,0,0,0);}
+    | KW_PRINT listPrint        {$$ = astCreate(AST_PRINT,0,$2,0,0,0);}
+    | KW_RETURN expr            {$$ = astCreate(AST_RETURN,0,$2,0,0,0);}
+    | KW_IF '(' expr ')' KW_THEN cmd                           {$$ = astCreate(AST_IF,0,$3,0,0,0);}
+    | KW_IF '(' expr ')' KW_THEN cmd KW_ELSE cmd              {$$ = astCreate(AST_IF_ELSE,0,$3,0,0,0);}
+    | KW_WHILE '(' expr ')' cmd                               {$$ = astCreate(AST_WHILE,0,$3,0,0,0);}
+	| block                  {$$ = $1;}
+    |                   {$$ = 0;}
 	;
 
 listPrint : expr ',' listPrint
@@ -139,11 +141,11 @@ expr : expr '+' expr    {$$ = astCreate(AST_ADD,0,$1,$3,0,0);}
     | expr OPERATOR_NE expr         {$$ = astCreate(OPERATOR_NE,0,$1,$3,0,0);}
     | expr OPERATOR_AND expr       {$$ = astCreate(OPERATOR_AND,0,$1,$3,0,0);}
     | expr OPERATOR_OR expr       {$$ = astCreate(OPERATOR_OR,0,$1,$3,0,0);}
-    | TK_IDENTIFIER '(' listArgs  ')'
-    | TK_IDENTIFIER '[' expr ']'
-    | TK_IDENTIFIER
+    | TK_IDENTIFIER '(' listArgs  ')'     {$$ = astCreate(AST_FUNC,yylval.symbol,$3,0,0,0);}
+    | TK_IDENTIFIER '[' expr ']'   {$$ = astCreate(AST_ARRAY,yylval.symbol,$3,0,0,0);}
+    | TK_IDENTIFIER             {$$ = astCreate(TK_IDENTIFIER,yylval.symbol,0,0,0,0);}
     | value
-    | LIT_STRING            {$$ = astCreate(AST_VALUE,yylval.symbol,$1,0,0,0);}
+    | LIT_STRING            {$$ = astCreate(LIT_STRING,yylval.symbol,0,0,0,0);}
     ;
 
 listArgs : arg ',' listArgs

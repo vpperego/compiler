@@ -14,6 +14,18 @@
 #define AST_MORE 6
 #define AST_NOT 7
 #define AST_PARENTHESES 8
+#define AST_FUNC 9
+#define AST_ARRAY 10
+#define AST_ATRIB 11
+#define AST_ATRIB_ARRAY 12
+#define AST_READ 13
+#define AST_PRINT 14
+#define AST_RETURN 15
+#define AST_IF 16
+#define AST_IF_ELSE 17
+#define AST_WHILE 18
+#define AST_BLOCK 19
+
 typedef struct ast_node{
   int type;
   HASH_NODE * symbol;
