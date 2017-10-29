@@ -56,6 +56,12 @@
 %type <ast> expr
 %type <ast> cmd
 %type <ast> block
+%type <ast> value
+%type <ast> listPrint
+%type <ast> listArgs
+%type <ast> type
+%type <ast> arg
+
 
 %left '<' '>'
 %left '!' OPERATOR_LE OPERATOR_GE OPERATOR_EQ OPERATOR_NE OPERATOR_AND OPERATOR_OR
@@ -83,9 +89,9 @@ vardec : TK_IDENTIFIER ':' type '=' value ';'
     | TK_IDENTIFIER ':' type '['LIT_INTEGER']' init ';'
     ;
 
-value: LIT_INTEGER
-    | LIT_REAL
-    | LIT_CHAR
+value: LIT_INTEGER      {$$ = astCreate(LIT_INTEGER,yylval.symbol,0,0,0,0);}
+    | LIT_REAL      {$$ = astCreate(LIT_REAL,yylval.symbol,0,0,0,0);}
+    | LIT_CHAR      {$$ = astCreate(LIT_CHAR,yylval.symbol,0,0,0,0);}
     ;
 
 init : value init
@@ -115,15 +121,15 @@ cmd : TK_IDENTIFIER '=' expr      {$$ = astCreate(AST_ATRIB,yylval.symbol,$3,0,0
     |                   {$$ = 0;}
 	;
 
-listPrint : expr ',' listPrint
-    | expr
+listPrint : expr ',' listPrint      {$$ = astCreate(AST_LIST_PARAM,0,$1,$3,0,0);}
+    | expr                          {$$ = astCreate(AST_PARAM,0,$1,0,0,0);}
     ;
 
-type : KW_BYTE
-    | KW_SHORT
-    | KW_LONG
-    | KW_FLOAT
-    | KW_DOUBLE
+type : KW_BYTE          {$$ = astCreate(KW_BYTE,0,0,0,0,0);}
+    | KW_SHORT          {$$ = astCreate(KW_SHORT,0,0,0,0,0);}
+    | KW_LONG          {$$ = astCreate(KW_LONG,0,0,0,0,0);}
+    | KW_FLOAT          {$$ = astCreate(KW_FLOAT,0,0,0,0,0);}
+    | KW_DOUBLE          {$$ = astCreate(KW_DOUBLE,0,0,0,0,0);}
     ;
 
 
@@ -144,18 +150,18 @@ expr : expr '+' expr    {$$ = astCreate(AST_ADD,0,$1,$3,0,0);}
     | TK_IDENTIFIER '(' listArgs  ')'     {$$ = astCreate(AST_FUNC,yylval.symbol,$3,0,0,0);}
     | TK_IDENTIFIER '[' expr ']'   {$$ = astCreate(AST_ARRAY,yylval.symbol,$3,0,0,0);}
     | TK_IDENTIFIER             {$$ = astCreate(TK_IDENTIFIER,yylval.symbol,0,0,0,0);}
-    | value
+    | value                 {$$ = $1;}
     | LIT_STRING            {$$ = astCreate(LIT_STRING,yylval.symbol,0,0,0,0);}
     ;
 
-listArgs : arg ',' listArgs
-    | arg
+listArgs : arg ',' listArgs {$$ = astCreate(AST_LIST_ARG,0,$1,$3,0,0);}
+    | arg   {$$ = astCreate(AST_ARG,yylval.symbol,$1,0,0,0);}
     ;
 
-arg: TK_IDENTIFIER ':' type
-    | TK_IDENTIFIER
-    | value
-    | LIT_STRING
+arg: TK_IDENTIFIER ':' type     {$$ = astCreate(AST_ARG_ID,yylval.symbol,$3,0,0,0);}
+    | TK_IDENTIFIER         {$$ = astCreate(TK_IDENTIFIER,yylval.symbol,0,0,0,0);}
+    | value           {$$ = $1;}
+    | LIT_STRING        {$$ = astCreate(LIT_STRING,yylval.symbol,0,0,0,0);}
     ;
 
 %%

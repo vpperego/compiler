@@ -25,6 +25,12 @@
 #define AST_IF_ELSE 17
 #define AST_WHILE 18
 #define AST_BLOCK 19
+#define AST_LIST_PARAM 20
+#define AST_PARAM 21
+#define AST_ARG_ID 22
+#define AST_LIST_ARG 23
+#define AST_ARG 24
+
 
 typedef struct ast_node{
   int type;
