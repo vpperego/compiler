@@ -95,16 +95,16 @@ decl : expr               {$$ = astCreate(AST_EXPRESSION, 0, $1, 0, 0, 0);}
     ;
 
 vardec : TK_IDENTIFIER ':' type '=' value ';'    {$$ = astCreate(AST_VARDEC,$1,$3,$5,0,0);}
-    | TK_IDENTIFIER ':' type '['LIT_INTEGER']' init ';'   {$$ = astCreate(AST_INIT_ARRAY,$1,$3,$5,$7,0);}
+    | TK_IDENTIFIER ':' type '[' LIT_INTEGER ']' init ';'   {$$ = astCreate(AST_INIT_ARRAY,$1,$3,$5,$7,0);}
     ;
 
 value: LIT_INTEGER      {$$ = astCreate(AST_INTEGER,$1,0,0,0,0);}
-    | LIT_REAL      {$$ = astCreate(AST_REAL,$1,0,0,0,0);}
-    | LIT_CHAR      {$$ = astCreate(AST_CHAR,$1,0,0,0,0);}
+    | LIT_REAL          {$$ = astCreate(AST_REAL,$1,0,0,0,0);}
+    | LIT_CHAR          {$$ = astCreate(AST_CHAR,$1,0,0,0,0);}
     ;
 
 init : value init {$$ = astCreate(AST_ARRAY_INIT_VALUES,0,$1,$2,0,0);}
-    |
+    |             {$$ = 0;}
     ;
 
 fundec : '(' type ')' TK_IDENTIFIER '(' listArgs ')' block    {$$ = astCreate(AST_FUNDEC,$4,$2,$6,$8,0);}
@@ -183,5 +183,3 @@ int yyerror(char *s) {
  fprintf(stderr, "Problema! ERRO linha = %d\n", getLineNumber());
  exit(3);
 }
-
-

@@ -54,13 +54,13 @@ letter   [A-Za-z]
 ]|[|[*,;:(){}+-/<>=!&$#] {return yytext[0];}
 
 
-{digits}+  {hashInsert(SYMBOL_LIT_INT, yytext);return LIT_INTEGER;}
-{digits}+"."{digits}+  {hashInsert(SYMBOL_LIT_REAL,yytext);return LIT_REAL;}
+{digits}+  {yylval.symbol = hashInsert(SYMBOL_LIT_INT, yytext);return LIT_INTEGER;}
+{digits}+"."{digits}+  {yylval.symbol = hashInsert(SYMBOL_LIT_REAL,yytext);return LIT_REAL;}
 
-\'.\' {hashInsert(SYMBOL_LIT_REAL, yytext);return LIT_CHAR;}
+\'.\' {yylval.symbol = hashInsert(SYMBOL_LIT_REAL, yytext);return LIT_CHAR;}
 \"(\\.|[^"])*\" {yylval.symbol =  hashInsert(SYMBOL_LIT_STRING, yytext);return LIT_STRING;}
 
-[a-zA-Z_]([a-zA-Z_0-9 ]*[a-zA-Z_0-9])* {hashInsert(SYMBOL_IDENTIFIER, yytext);return TK_IDENTIFIER;}
+[a-zA-Z_]([a-zA-Z_0-9 ]*[a-zA-Z_0-9])* {yylval.symbol = hashInsert(SYMBOL_IDENTIFIER, yytext);return TK_IDENTIFIER;}
 
 
 "\n"      {++lines;}

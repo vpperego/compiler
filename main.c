@@ -32,24 +32,21 @@ int main(int argc, char *argv[]) {
 		fprintf(stderr,"Nao eh possivel abrir o arquivo %s.\n",argv[1]);
 		return 2;
 	}
-	
 	initMe();
-	
 	yyparse();
 
 	AST *tree = getAst();
 
-    out = fopen(argv[2], "w");
+  out = fopen(argv[2], "w");
 
     if(out == NULL){
         fprintf(stderr,"Nao eh possivel abrir o arquivo %s.\n",argv[2]);
-		return 2;
-	} else {
-		astPrintSrc(tree, out);
-	}
-		
+				return 2;
+		} else {
+			astPrintSrc(tree, out);
+		}
+
 	fclose(out);
 	hashPrint();
-     
-    return 0; 
+    return 0;
 }
