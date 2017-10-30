@@ -1,0 +1,16 @@
+a : short=0;
+i : long=0;
+v : long[10] ;
+mat : long[10] ;
+f : float=10.55;
+c : byte='x';
+d : byte=65;
+(long)main(){
+a=10;
+v[2]=v[10-1] ;
+print "Digite um numero: \n";
+read > i;
+while(i<10){
+a=incn(a,1);
+i=i+1};
+}

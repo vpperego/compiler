@@ -7,6 +7,7 @@
 #define MAX_SONS 4
 
 enum AST_TYPE{
+  AST_SYMBOL,
   AST_ADD,
   AST_SUB,
   AST_MUL,
@@ -15,7 +16,15 @@ enum AST_TYPE{
   AST_MORE,
   AST_NOT,
   AST_PARENTHESES,
+  AST_LE,
+  AST_GE,
+  AST_EQ,
+  AST_NE,
+  AST_AND,
+  AST_OR,
   AST_FUNC,
+  AST_INIT_ARRAY,
+  AST_ARRAY_INIT_VALUES,
   AST_ARRAY,
   AST_ATRIB,
   AST_ATRIB_ARRAY,
@@ -34,7 +43,16 @@ enum AST_TYPE{
   AST_START,
   AST_VARDEC,
   AST_FUNDEC,
-  AST_LIST_CMD
+  AST_LIST_CMD,
+  AST_CMD,
+  AST_BYTE,
+  AST_SHORT,
+  AST_LONG,
+  AST_FLOAT,
+  AST_DOUBLE,
+  AST_CHAR,
+  AST_INTEGER,
+  AST_REAL
   };
 
 
@@ -46,4 +64,6 @@ typedef struct ast_node{
 
 AST * astCreate(int type, HASH_NODE *symbol,AST* son0, AST* son1, AST* son2, AST* son3);
 void astPrint (AST* node, int level);
+void astPrintSrc(AST* node, FILE *out);
+
 #endif
