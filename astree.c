@@ -158,7 +158,9 @@ void astPrint(AST* node, int level){
     case AST_REAL:
       fprintf(stderr, "AST_REAL");
       break;
-
+    case AST_ARRAY_INIT_VALUES:
+      fprintf(stderr, "AST_ARRAY_INIT_VALUES");
+      break;
     case AST_VARIABLE:
       fprintf(stderr, "AST_VARIABLE");
       break;
@@ -315,7 +317,6 @@ void astPrintSrc(AST* node, FILE *yyout) {
       astPrintSrc(node->son[1], yyout);
       fprintf(yyout, "] ");
       astPrintSrc(node->son[2], yyout);
-      fprintf(yyout, " ;");
       break;
 
     case AST_ARRAY_INIT_VALUES:
@@ -326,7 +327,7 @@ void astPrintSrc(AST* node, FILE *yyout) {
       }
       else {
         astPrintSrc(node->son[0], yyout);
-        fprintf(yyout, ";");
+        // fprintf(yyout, ";");
       }
       break;
 
@@ -377,7 +378,6 @@ void astPrintSrc(AST* node, FILE *yyout) {
     case  AST_START:
       if(node->son[0]){
         astPrintSrc(node->son[0], yyout);
-        fprintf(yyout, ";\n");
       }
       astPrintSrc(node->son[1], yyout);
       break;
@@ -405,17 +405,17 @@ void astPrintSrc(AST* node, FILE *yyout) {
     case  AST_LIST_CMD:
       if(node->son[1]){
         astPrintSrc(node->son[0], yyout);
-        fprintf(yyout, ";");
+        fprintf(yyout, ";\n");
         astPrintSrc(node->son[1], yyout);
       }
-      else {
+      else if(node->son[0]) {
         astPrintSrc(node->son[0], yyout);
         fprintf(yyout, ";");
       }
       break;
     case AST_CMD:
       astPrintSrc(node->son[0], yyout);
-      fprintf(yyout, ";");
+      // fprintf(yyout, ";");
       break;
     case AST_BYTE:
       fprintf(yyout, "byte " );
@@ -436,7 +436,6 @@ void astPrintSrc(AST* node, FILE *yyout) {
       fprintf(yyout, "%s", node->symbol->text);
       break;
     case AST_INTEGER:
-      fprintf(stderr, "\nAST_INTEGER %s\n", node->symbol->text);
       fprintf(yyout, "%s", node->symbol->text);
       break;
     case AST_REAL:
@@ -450,12 +449,14 @@ void astPrintSrc(AST* node, FILE *yyout) {
       break;
     case AST_VARIABLE:
       astPrintSrc(node->son[0], yyout);
+      fprintf(yyout, ";\n");
       break;
     case AST_FUNCTION:
       astPrintSrc(node->son[0], yyout);
       break;
     case AST_EXPRESSION:
       astPrintSrc(node->son[0], yyout);
+      fprintf(yyout, ";\n");
       break;
   }
 }

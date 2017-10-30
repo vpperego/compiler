@@ -14,7 +14,7 @@
 	int yyerror(char *message);
 	extern int getLineNumber();
 
-    AST *root;
+    AST *root, * temp;
 
 %}
 
@@ -95,7 +95,7 @@ decl : expr               {$$ = astCreate(AST_EXPRESSION, 0, $1, 0, 0, 0);}
     ;
 
 vardec : TK_IDENTIFIER ':' type '=' value ';'    {$$ = astCreate(AST_VARDEC,$1,$3,$5,0,0);}
-    | TK_IDENTIFIER ':' type '[' LIT_INTEGER ']' init ';'   {$$ = astCreate(AST_INIT_ARRAY,$1,$3,$5,$7,0);}
+    | TK_IDENTIFIER ':' type '[' LIT_INTEGER ']' init ';'   {temp = astCreate(AST_INTEGER,$5,0,0,0,0);$$ = astCreate(AST_INIT_ARRAY,$1,$3,temp,$7,0);}
     ;
 
 value: LIT_INTEGER      {$$ = astCreate(AST_INTEGER,$1,0,0,0,0);}
@@ -164,13 +164,11 @@ expr : expr '+' expr    {$$ = astCreate(AST_ADD,0,$1,$3,0,0);}
     ;
 
 listArgs : arg ',' listArgs {$$ = astCreate(AST_LIST_ARG,0,$1,$3,0,0);}
-    | arg   {$$ = astCreate(AST_ARG,0,$1,0,0,0);}
+    | arg   {$$ =  $1;}
     ;
 
 arg: TK_IDENTIFIER ':' type     {$$ = astCreate(AST_ARG_ID,$1,$3,0,0,0);}
-    | TK_IDENTIFIER         {$$ = astCreate(TK_IDENTIFIER,$1,0,0,0,0);}
-    | value           {$$ = $1;}
-    | LIT_STRING        {$$ = astCreate(AST_SYMBOL,$1,0,0,0,0);}
+    | expr                      {$$ = $1;}
     ;
 
 %%
