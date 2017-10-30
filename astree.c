@@ -359,7 +359,7 @@ void astPrintSrc(AST* node, FILE *yyout) {
       astPrintSrc(node->son[0], yyout);
       break;
     case  AST_ARG_ID:
-      fprintf(yyout, "%s ", node->symbol->text);
+      fprintf(yyout, "%s :", node->symbol->text);
       astPrintSrc(node->son[0], yyout);
       break;
     case  AST_LIST_ARG:
