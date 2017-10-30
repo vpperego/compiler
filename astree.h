@@ -52,13 +52,16 @@ enum AST_TYPE{
   AST_DOUBLE,
   AST_CHAR,
   AST_INTEGER,
-  AST_REAL
+  AST_REAL,
+  AST_FUNCTION,
+  AST_VARIABLE,
+  AST_EXPRESSION
   };
 
 
 typedef struct ast_node{
   int type;
-  HASH_NODE * symbol;
+  HASH_NODE *symbol;
   struct ast_node * son[MAX_SONS];
 }AST;
 

@@ -86,12 +86,12 @@ program : listdecl      {root = $$; astPrint(root,0);}
     ;
 
 listdecl : decl listdecl  {$$ = astCreate(AST_START, 0, $1, $2, 0, 0);}
-    |                     { $$ = 0; }
+    |         { $$ = 0; }
     ;
 
-decl : expr       {$$ = $1;}
-    | fundec      {$$ = $1;}
-    | vardec      {$$ = $1;}
+decl : expr               {$$ = astCreate(AST_EXPRESSION, 0, $1, 0, 0, 0);}
+    | fundec              {$$ = astCreate(AST_FUNCTION, 0, $1, 0, 0, 0);}
+    | vardec              {$$ = astCreate(AST_VARIABLE, 0, $1, 0, 0, 0);}
     ;
 
 vardec : TK_IDENTIFIER ':' type '=' value ';'    {$$ = astCreate(AST_VARDEC,$1,$3,$5,0,0);}

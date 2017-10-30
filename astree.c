@@ -158,6 +158,16 @@ void astPrint(AST* node, int level){
     case AST_REAL:
       fprintf(stderr, "AST_REAL");
       break; 
+    
+    case AST_VARIABLE:
+      fprintf(stderr, "AST_VARIABLE");
+      break;
+    case AST_FUNCTION:
+      fprintf(stderr, "AST_FUNCTION");
+      break;
+    case AST_EXPRESSION:
+      fprintf(stderr, "AST_EXPRESSION");
+      break;
     default: 
       fprintf(stderr, "Node Type: %d", node->type);
       break;
@@ -179,6 +189,8 @@ void astPrintSrc(AST* node, FILE *yyout) {
   if(!node)
       return;
   int i;
+  printf("BEGIN");
+  fprintf(yyout, "HAS NODES");
 
   switch(node->type) {
     case AST_SYMBOL:           
@@ -363,13 +375,20 @@ void astPrintSrc(AST* node, FILE *yyout) {
     case  AST_ARG:
       astPrintSrc(node->son[0], yyout);
       break;
-    // case  AST_START:
-    //   astPrintSrc(node->son[0], yyout); 
-    //   fprintf(yyout,";\n"); 
-    //   astPrintSrc(node->son[1], yyout);
-    //   break;
+    case  AST_START:
+      if(node->son[1]){
+        astPrintSrc(node->son[1], yyout);
+        fprintf(yyout, ";\n");
+        astPrintSrc(node->son[2], yyout);
+      }
+      else{
+        astPrintSrc(node->son[0], yyout);
+        fprintf(yyout, ";\n");
+      }
+      break;
     case  AST_VARDEC:
-      fprintf(yyout,"%s ", node->symbol->text); 
+      
+      printf("%s ", node->symbol->text); 
       fprintf(yyout,": "); 
       astPrintSrc(node->son[0], yyout);
       fprintf(yyout,"=");
@@ -433,7 +452,16 @@ void astPrintSrc(AST* node, FILE *yyout) {
       fprintf(yyout, "(" ); 
       astPrintSrc(node->son[0], yyout);
       fprintf(yyout, ")" );
-      break;  
+      break;
+    case AST_VARIABLE:
+      astPrintSrc(node->son[0], yyout);
+      break;
+    case AST_FUNCTION:
+      astPrintSrc(node->son[0], yyout);
+      break; 
+    case AST_EXPRESSION:
+      astPrintSrc(node->son[0], yyout);
+      break;
   }
 }
 
