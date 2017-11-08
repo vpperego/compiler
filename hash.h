@@ -18,5 +18,5 @@ HASH_NODE * table[HASH_SIZE];
 void initMe(void);
 HASH_NODE * hashInsert(int type, char *text);
 void hashPrint();
-
+void hashCheckUndeclared();
 #endif

@@ -61,3 +61,7 @@ void hashPrint(){
   }
 
 }
+
+void hashCheckUndeclared(){
+  
+}

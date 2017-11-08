@@ -25,7 +25,7 @@ int isRunning();
 int main(int argc, char *argv[]) {
 	int token;
 	if(argc<3){
-		fprintf(stderr,"Execute: ./etapa3 inputfile outputfile\n");
+		fprintf(stderr,"Execute: ./etapa4 inputfile outputfile\n");
 		return 1;
 	}
 	if(!(yyin = fopen(argv[1],"r"))){
