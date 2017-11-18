@@ -82,7 +82,10 @@
 %%
 
 /* Exemplos tirados da aula do professor*/
-program : listdecl      {root = $$; astPrint(root,0);semanticSetTypes(root);}
+program : listdecl      {root = $1;
+                        astPrint(root,0);
+                        semanticSetTypes(root);
+                        semanticCheckUsage(root);}
     ;
 
 listdecl : decl listdecl  {$$ = astCreate(AST_START, 0, $1, $2, 0, 0);}

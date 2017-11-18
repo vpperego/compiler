@@ -8,6 +8,8 @@
 #define SYMBOL_LIT_CHAR 3
 #define SYMBOL_LIT_STRING 4
 #define SYMBOL_IDENTIFIER 7
+#define SYMBOL_VAR 8
+
 /*
 * Filipe Joner
 * Vinícius Pittigliani Perego

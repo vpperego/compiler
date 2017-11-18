@@ -10,3 +10,4 @@ enum DATATYPE{
 
 void semanticSetTypes(AST * node);
 void semanticCheckUndeclared();
+void semanticCheckUsage(AST * node);
