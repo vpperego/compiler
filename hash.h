@@ -2,6 +2,12 @@
 #define HASH_H
 
 #define HASH_SIZE 999
+
+#define SYMBOL_LIT_INT 1
+#define SYMBOL_LIT_REAL 2
+#define SYMBOL_LIT_CHAR 3
+#define SYMBOL_LIT_STRING 4
+#define SYMBOL_IDENTIFIER 7
 /*
 * Filipe Joner
 * Vinícius Pittigliani Perego
