@@ -19,6 +19,7 @@ void hashInit(void){
 }
 
 void initMe(void){
+    exitCode = 0;
     hashInit();
 }
 

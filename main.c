@@ -7,6 +7,7 @@
 * Vinícius Pittigliani Perego
 */
 extern int yylex();
+extern int exitCode;
 extern char *yytext;
 extern FILE* file();
 extern int lines;
@@ -39,5 +40,6 @@ int main(int argc, char *argv[]) {
 	// AST *tree = getAst();
 
 	hashPrint();
+	exit(exitCode);
     return 0;
 }
