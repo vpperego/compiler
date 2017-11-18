@@ -9,7 +9,7 @@
 	#include <string.h>
     #include "astree.h"
     #include "hash.h"
-
+    #include "semantic.h"
 	int yylex();
 	int yyerror(char *message);
 	extern int getLineNumber();
@@ -82,7 +82,7 @@
 %%
 
 /* Exemplos tirados da aula do professor*/
-program : listdecl      {root = $$; astPrint(root,0);}
+program : listdecl      {root = $$; astPrint(root,0);semanticSetTypes(root);}
     ;
 
 listdecl : decl listdecl  {$$ = astCreate(AST_START, 0, $1, $2, 0, 0);}

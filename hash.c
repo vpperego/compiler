@@ -63,5 +63,12 @@ void hashPrint(){
 }
 
 void hashCheckUndeclared(){
-  
+  int i;
+  HASH_NODE  * node;
+  for (i = 0; i < HASH_SIZE; i++) {
+    for (node = table[i]; node; node = node->next) {
+      if(node->type == SYMBOL_IDENTIFIER)
+        fprintf(stderr,"SEMANTIC ERROR: symbol %s not declared\n",node->text );
+      }
+  }
 }
