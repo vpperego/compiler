@@ -10,7 +10,8 @@ int checkArithmeticType(int type);
 
 int setDataType(int nodeType);
 
-void checkParams(AST* node);
+void checkParams(AST* node, HASH_NODE * parameters);
+HASH_NODE * setFuncParameters (AST * node);
 
 void checkSemantics(AST *node) {
    semanticCheckUndeclared();
@@ -123,6 +124,7 @@ void semanticSetTypes(AST * node){
       if(node->son[2]){
            node->symbol->parametersNumber = countParameters(node->son[1]);
       }
+      node->symbol->funcParameters = setFuncParameters(node->son[1]);
     }
   }
 
@@ -133,9 +135,7 @@ void semanticSetTypes(AST * node){
     }
     else{
       node->symbol->type = SYMBOL_ARRAY;
-      switch (node->son[0]->type) {
-
-      }
+      node->symbol->dataType = setDataType(node->son[0]->type);
     }
   }
 
@@ -213,7 +213,7 @@ void semanticCheckUsage(AST * node){
         fprintf(stderr, "SEMANTIC ERROR: function %s has wrong number of parameters",node->symbol->text);
         exitCode = 4;
       }
-      checkParams(node->son[0]);
+      checkParams(node->son[0],node->symbol->funcParameters);
     break;
 
 
@@ -320,11 +320,28 @@ int setDataType(int nodeType){
     }
 }
 
-void checkParams(AST* node){
+void checkParams(AST* node, HASH_NODE * parameters){
   while(node->son[1]->type == AST_LIST_ARG ){
-    // if(node->son[0]->dataTy != AST_ARG_ID){
-    // TODO 
-    // }
+    if(node->son[0]->symbol->dataType != parameters->dataType){
+      fprintf(stderr, "SEMANTIC ERROR: Function parameter type is wrong!\n" );
+      exitCode = 4;
+      break;
+    }
+    parameters = parameters->next;
     node = node->son[1];
   }
- }
+}
+
+HASH_NODE * setFuncParameters (AST * node){
+  HASH_NODE * iterator=NULL;
+  // HASH_NODE * funcParameters  = malloc(sizeof( HASH_NODE *));;
+  HASH_NODE * funcParameters = node->son[0]->symbol;
+  funcParameters->next = iterator;
+  while(node->son[1]->type != AST_LIST_ARG){
+    node = node->son[1];
+    iterator->next = node->son[0]->symbol;
+    iterator = iterator->next;
+  }
+  iterator->next = NULL;
+  return funcParameters;
+}
