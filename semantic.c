@@ -4,7 +4,11 @@
   Filipe Joner
   Vinícius Pittigliani Perego
 */
+int checkBooleanType(int type);
 
+int checkArithmeticType(int type);
+
+void checkParams(AST* node);
 
 void checkSemantics(AST *node) {
   semanticCheckUndeclared();
@@ -57,30 +61,57 @@ void semanticCheckUsage(AST * node){
   int i;
   if(!node)  return;
 
-  //check left-side assign TODO colocar AST_ATRIB_ARRAY aqui tambem ?
-  switch(node->type){
+   switch(node->type){
     case AST_ATRIB:
       if(node->symbol->type != SYMBOL_VAR) {
         fprintf(stderr, "SEMANTIC ERROR: identifier %s must be scalar",node->symbol->text);
         exitCode = 4;
       }
       break;
-
-    //check right-side assign TODO colocar AST_ATRIB_ARRAY aqui tambem ?
-    case AST_SYMBOL:
-      if(node->symbol->type != SYMBOL_FUN){
+    case AST_ATRIB_ARRAY:
+      if(node->symbol->type != SYMBOL_VAR) {
         fprintf(stderr, "SEMANTIC ERROR: identifier %s must be scalar",node->symbol->text);
         exitCode = 4;
       }
       break;
 
+    case AST_SYMBOL:
+     if(node->symbol->type != SYMBOL_FUN){
+        fprintf(stderr, "SEMANTIC ERROR: identifier %s must be scalar",node->symbol->text);
+        exitCode = 4;
+      }
+    case AST_READ://TODO
+    break;
+    case AST_PRINT://TODO
+    break;
+    case AST_RETURN://TODO
+    break;
+    case AST_IF:
+      if(checkBooleanType(node->son[0]->type)){
+        fprintf(stderr, "SEMANTIC ERROR: if conditional must be boolean");
+      }
+    break;
+    case AST_IF_ELSE: //TODO
+    if(checkBooleanType(node->son[0]->type)){
+      fprintf(stderr, "SEMANTIC ERROR: if conditional must be boolean");
+    }
+    if(node->son[1]->symbol->datatype != node->son[2]->symbol->datatype){
+      fprintf(stderr, "SEMANTIC ERROR: if types must be equal");
+    }
+    break;
+    case AST_WHILE:
+      if(checkBooleanType(node->son[0]->type)){
+        fprintf(stderr, "SEMANTIC ERROR: While conditional must be boolean");
+      }
+    break;
 
-    //check if function calls are functions TODO colocar AST_ATRIB_ARRAY aqui tambem ?
+    //check if function calls are functions
     case AST_FUNC:
       if(node->symbol->type != SYMBOL_FUN){
         fprintf(stderr, "SEMANTIC ERROR: identifier %s must be function",node->symbol->text);
         exitCode = 4;
       }
+      checkParams(node->son[1]);
     break;
 
 
@@ -92,30 +123,13 @@ void semanticCheckOperands(AST *node){
   int i;
   if(!node)  return;
 
-	if (node->type == AST_ADD || node->type == AST_SUB || node->type == AST_MUL || node->type == AST_DIV || node->type == AST_LESS || node->type == AST_MORE || node->type == AST_NE || node->type == AST_EQ || node->type == AST_LE || node->type == AST_GE){
-		if(node->son[0]->type == AST_LESS ||
-		   node->son[0]->type == AST_MORE ||
-		   node->son[0]->type == AST_GE ||
-		   node->son[0]->type == AST_LE ||
-		   node->son[0]->type == AST_NE ||
-		   node->son[0]->type == AST_EQ ||
-		   node->son[0]->type == AST_OR ||
-		   node->son[0]->type == AST_AND||
-       node->son[0]->type == AST_NOT){
-
+	if (checkArithmeticType(node->type)
+      || node->type == AST_LESS || node->type == AST_MORE || node->type == AST_NE || node->type == AST_EQ || node->type == AST_LE || node->type == AST_GE){
+		if(checkBooleanType(node->son[0]->type)){
 			  fprintf(stderr, "ERRO: Operando esquerdo não pode ser logico. \n");
 			  exitCode = 4;
 		}
-		if(node->son[1]->type == AST_LESS ||
-		   node->son[1]->type == AST_MORE ||
-		   node->son[1]->type == AST_GE ||
-		   node->son[1]->type == AST_LE ||
-		   node->son[1]->type == AST_NE ||
-		   node->son[1]->type == AST_EQ ||
-		   node->son[1]->type == AST_OR ||
-		   node->son[1]->type == AST_AND||
-       node->son[1]->type == AST_NOT){
-
+		if(checkBooleanType(node->son[1]->type)){
 			  fprintf(stderr, "ERRO: Operando direito não pode ser logico. \n");
 			  exitCode = 4;
 		}
@@ -148,4 +162,25 @@ void semanticCheckOperands(AST *node){
 
 void semanticCheckUndeclared(){
   hashCheckUndeclared();
+}
+
+int checkBooleanType(int type){
+  return type == AST_LESS ||
+     type == AST_MORE ||
+     type == AST_GE ||
+     type == AST_LE ||
+     type == AST_NE ||
+     type == AST_EQ ||
+     type == AST_OR ||
+     type == AST_AND||
+     type == AST_NOT;
+}
+
+int checkArithmeticType(int type){
+  return type == AST_ADD || type == AST_SUB || type == AST_MUL || type == AST_DIV ;
+}
+
+
+void checkParams(AST* node){
+  //TODO
 }
