@@ -8,48 +8,48 @@ int checkBooleanType(int type);
 
 int checkArithmeticType(int type);
 
+int setDataType(int nodeType);
+
 void checkParams(AST* node);
 
 void checkSemantics(AST *node) {
-<<<<<<< HEAD
-=======
-  semanticCheckUndeclared();
->>>>>>> 3511733f8ad9962135aab04197ae96858e327d99
+   semanticCheckUndeclared();
+
   semanticSetTypes(node);
   semanticCheckUndeclared();
   semanticCheckUsage(node);
   semanticCheckOperands(node);
 }
 
-void setSymbolType(AST_NODE* node)
-{
-    switch (node->type) {
-        case AST_VAR:
-            node->symbol->type = SYMBOL_SCALAR;
-            break;
-
-        case AST_ARRAY:
-            node->symbol->type = SYMBOL_ARRAY;
-            break;
-
-        case AST_FUNCTION:
-            node->symbol->type = SYMBOL_FUNCTION;
-            break;
-        
-        case AST_PARAMETER:
-            node->symbol->type = SYMBOL_SCALAR;
-            break;
-        
-        default:
-            node->symbol->type = SYMBOL_UNDEF;
-            break;
-    }
-}
+// void setSymbolType(AST * node)
+// {
+//     switch (node->type) {
+//         case AST_VAR:
+//             node->symbol->type = SYMBOL_SCALAR;
+//             break;
+//
+//         case AST_ARRAY:
+//             node->symbol->type = SYMBOL_ARRAY;
+//             break;
+//
+//         case AST_FUNCTION:
+//             node->symbol->type = SYMBOL_FUNCTION;
+//             break;
+//
+//         case AST_PARAM:
+//             node->symbol->type = SYMBOL_SCALAR;
+//             break;
+//
+//         default:
+//             node->symbol->type = SYMBOL_UNDEF;
+//             break;
+//     }
+// }
 
 /* sets hash symbol datatype based on ast node type */
-void setSymbolDataType(AST_NODE* node)
+void setSymbolDataType(AST * node)
 {
-    switch (node->sons[0]->type) {
+    switch (node->son[0]->type) {
         case AST_BYTE:
             node->symbol->dataType = DATATYPE_BYTE;
             break;
@@ -69,19 +69,20 @@ void setSymbolDataType(AST_NODE* node)
 	    case AST_DOUBLE:
             node->symbol->dataType = DATATYPE_DOUBLE;
             break;
-        
-        case AST_LIT_INT:
-            node->symbol->dataType = DATATYPE_INTEGER;
-            break;
 
-        default:
-            node->symbol->dataType = SYMBOL_UNDEF;
-            break;
+        // case AST_LIT_INT:
+        //     node->symbol->dataType = DATATYPE_INT;
+        //     break;
+
+        // default:
+        //     node->symbol->dataType = SYMBOL_UNDEF;
+        //     break;
     }
 }
 
+
 void semanticSetTypes(AST * node){
-  
+
   int i;
   if(!node)  return;
 
@@ -91,44 +92,8 @@ void semanticSetTypes(AST * node){
       exitCode = 4;
     }else{
       node->symbol->type = SYMBOL_VAR;
-      switch (node->son[0]->type) {
-        case AST_BYTE:
-          node->symbol->dataType = DATATYPE_BYTE;
-          break;
-        
-        case AST_CHAR:
-          node->symbol->dataType = DATATYPE_CHAR;
-          break;
-
-        case AST_SHORT:
-          node->symbol->dataType = DATATYPE_SHORT;
-          break;
-
-        case AST_LONG:
-          node->symbol->dataType = DATATYPE_LONG;
-          break;
-
-        case AST_FLOAT:
-          node->symbol->dataType = DATATYPE_FLOAT;
-          break;
-
-        case AST_DOUBLE:
-          node->symbol->dataType = DATATYPE_DOUBLE;
-          break;
-
-        case AST_INTEGER:
-          node->symbol->dataType = DATATYPE_INTEGER;
-          break;
-        
-        case AST_REAL:
-          node->symbol->dataType = DATATYPE_REAL;
-          break;
-
-        default:
-          break;
-      }
+      node->symbol->dataType = setDataType(node->son[0]->type);
     }
-
   } else if(node->type == AST_FUNDEC){
 
     if(node->symbol->type != SYMBOL_IDENTIFIER){
@@ -136,42 +101,7 @@ void semanticSetTypes(AST * node){
       exitCode = 4;
     }else{
       node->symbol->type = SYMBOL_FUN;
-      switch (node->son[0]->type) {
-        case AST_BYTE:
-          node->symbol->dataType = DATATYPE_BYTE;
-          break;
-        
-        case AST_CHAR:
-          node->symbol->dataType = DATATYPE_CHAR;
-          break;
-
-        case AST_SHORT:
-          node->symbol->dataType = DATATYPE_SHORT;
-          break;
-
-        case AST_LONG:
-          node->symbol->dataType = DATATYPE_LONG;
-          break;
-
-        case AST_FLOAT:
-          node->symbol->dataType = DATATYPE_FLOAT;
-          break;
-
-        case AST_DOUBLE:
-          node->symbol->dataType = DATATYPE_DOUBLE;
-          break;
-
-        case AST_INTEGER:
-          node->symbol->dataType = DATATYPE_INTEGER;
-          break;
-        
-        case AST_REAL:
-          node->symbol->dataType = DATATYPE_REAL;
-          break;
-
-        default:
-          break;
-      }
+      node->symbol->dataType = setDataType(node->son[0]->type);
     }
   }
 
@@ -183,45 +113,12 @@ void semanticSetTypes(AST * node){
     else{
       node->symbol->type = SYMBOL_ARRAY;
       switch (node->son[0]->type) {
-        case AST_BYTE:
-          node->symbol->dataType = DATATYPE_BYTE;
-          break;
-        
-        case AST_CHAR:
-          node->symbol->dataType = DATATYPE_CHAR;
-          break;
 
-        case AST_SHORT:
-          node->symbol->dataType = DATATYPE_SHORT;
-          break;
-
-        case AST_LONG:
-          node->symbol->dataType = DATATYPE_LONG;
-          break;
-
-        case AST_FLOAT:
-          node->symbol->dataType = DATATYPE_FLOAT;
-          break;
-
-        case AST_DOUBLE:
-          node->symbol->dataType = DATATYPE_DOUBLE;
-          break;
-
-        case AST_INTEGER:
-          node->symbol->dataType = DATATYPE_INTEGER;
-          break;
-        
-        case AST_REAL:
-          node->symbol->dataType = DATATYPE_REAL;
-          break;
-
-        default:
-          break;
       }
     }
   }
 
-  else if(node->type == AST_PARAMETER) {
+  else if(node->type == AST_PARAM) {
     if(node->symbol->type != SYMBOL_IDENTIFIER){
       fprintf(stderr, "SEMANTIC ERROR: identifier %s already declared\n",node->symbol->text );
       exitCode = 4;
@@ -232,7 +129,7 @@ void semanticSetTypes(AST * node){
         case AST_BYTE:
           node->symbol->dataType = DATATYPE_BYTE;
           break;
-        
+
         case AST_CHAR:
           node->symbol->dataType = DATATYPE_CHAR;
           break;
@@ -254,9 +151,9 @@ void semanticSetTypes(AST * node){
           break;
 
         case AST_INTEGER:
-          node->symbol->dataType = DATATYPE_INTEGER;
+          node->symbol->dataType = DATATYPE_INT;
           break;
-        
+
         case AST_REAL:
           node->symbol->dataType = DATATYPE_REAL;
           break;
@@ -311,7 +208,7 @@ void semanticCheckUsage(AST * node){
     if(checkBooleanType(node->son[0]->type)){
       fprintf(stderr, "SEMANTIC ERROR: if conditional must be boolean");
     }
-    if(node->son[1]->symbol->datatype != node->son[2]->symbol->datatype){
+    if(node->son[1]->symbol->dataType != node->son[2]->symbol->dataType){
       fprintf(stderr, "SEMANTIC ERROR: if types must be equal");
     }
     break;
@@ -327,7 +224,7 @@ void semanticCheckUsage(AST * node){
         fprintf(stderr, "SEMANTIC ERROR: identifier %s must be function",node->symbol->text);
         exitCode = 4;
       }
-      checkParams(node->son[1]);
+      checkParams(node->son[0]);
     break;
 
 
@@ -396,6 +293,43 @@ int checkArithmeticType(int type){
   return type == AST_ADD || type == AST_SUB || type == AST_MUL || type == AST_DIV ;
 }
 
+int setDataType(int nodeType){
+  switch(nodeType){
+    case AST_BYTE:
+      return DATATYPE_BYTE;
+      break;
+
+    case AST_CHAR:
+      return DATATYPE_CHAR;
+      break;
+
+    case AST_SHORT:
+      return DATATYPE_SHORT;
+      break;
+
+    case AST_LONG:
+      return DATATYPE_LONG;
+      break;
+
+    case AST_FLOAT:
+      return DATATYPE_FLOAT;
+      break;
+
+    case AST_DOUBLE:
+      return DATATYPE_DOUBLE;
+      break;
+
+    case AST_INTEGER:
+      return DATATYPE_INT;
+      break;
+
+    case AST_REAL:
+      return DATATYPE_REAL;
+      break;
+      default:
+      break;
+    }
+}
 
 void checkParams(AST* node){
   //TODO
