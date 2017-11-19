@@ -7,10 +7,10 @@
 
 
 void checkSemantics(AST *node) {
-  emanticCheckUndeclared();
+  semanticCheckUndeclared();
   semanticSetTypes(node);
   semanticCheckUsage(node);
-  semanticCheckOperands(node)
+  semanticCheckOperands(node);
 }
 
 
@@ -65,7 +65,7 @@ void semanticCheckUsage(AST * node){
         exitCode = 4;
       }
       break;
-  
+
     //check right-side assign TODO colocar AST_ATRIB_ARRAY aqui tambem ?
     case AST_SYMBOL:
       if(node->symbol->type != SYMBOL_FUN){
@@ -73,8 +73,8 @@ void semanticCheckUsage(AST * node){
         exitCode = 4;
       }
       break;
-  
-  
+
+
     //check if function calls are functions TODO colocar AST_ATRIB_ARRAY aqui tambem ?
     case AST_FUNC:
       if(node->symbol->type != SYMBOL_FUN){
@@ -82,8 +82,8 @@ void semanticCheckUsage(AST * node){
         exitCode = 4;
       }
     break;
-  
-  
+
+
   }
 
 }
@@ -92,61 +92,55 @@ void semanticCheckOperands(AST *node){
   int i;
   if(!node)  return;
 
-  // if(node->type == AST_ADD || node->type == AST_MUL){
-  //   if(node->son[0] != AST_ADD || node->son[0] != AST_MUL || node->son[0] !=)
-  // }
-  int i;
-	if (!node) return;
-	
-	if (node->type == ASTREE_ADD || node->type == ASTREE_SUB || node->type == ASTREE_MUL || node->type == ASTREE_DIV || node->type == ASTREE_G || node->type == ASTREE_L || node->type == ASTREE_NE || node->type == ASTREE_EQ || node->type == ASTREE_LE || node->type == ASTREE_GE){
-		if(node->son[0]->type == ASTREE_G ||
-		   node->son[0]->type == ASTREE_L || 
-		   node->son[0]->type == ASTREE_GE || 
-		   node->son[0]->type == ASTREE_LE || 
-		   node->son[0]->type == ASTREE_NE || 
-		   node->son[0]->type == ASTREE_EQ || 
-		   node->son[0]->type == ASTREE_OR || 
-		   node->son[0]->type == ASTREE_AND|| 
-       node->son[0]->type == ASTREE_NOT){
+	if (node->type == AST_ADD || node->type == AST_SUB || node->type == AST_MUL || node->type == AST_DIV || node->type == AST_LESS || node->type == AST_MORE || node->type == AST_NE || node->type == AST_EQ || node->type == AST_LE || node->type == AST_GE){
+		if(node->son[0]->type == AST_LESS ||
+		   node->son[0]->type == AST_MORE ||
+		   node->son[0]->type == AST_GE ||
+		   node->son[0]->type == AST_LE ||
+		   node->son[0]->type == AST_NE ||
+		   node->son[0]->type == AST_EQ ||
+		   node->son[0]->type == AST_OR ||
+		   node->son[0]->type == AST_AND||
+       node->son[0]->type == AST_NOT){
 
 			  fprintf(stderr, "ERRO: Operando esquerdo não pode ser logico. \n");
 			  exitCode = 4;
 		}
-		if(node->son[1]->type == ASTREE_G ||
-		   node->son[1]->type == ASTREE_L || 
-		   node->son[1]->type == ASTREE_GE || 
-		   node->son[1]->type == ASTREE_LE || 
-		   node->son[1]->type == ASTREE_NE || 
-		   node->son[1]->type == ASTREE_EQ || 
-		   node->son[1]->type == ASTREE_OR || 
-		   node->son[1]->type == ASTREE_AND|| 
-       node->son[1]->type == ASTREE_NOT){
+		if(node->son[1]->type == AST_LESS ||
+		   node->son[1]->type == AST_MORE ||
+		   node->son[1]->type == AST_GE ||
+		   node->son[1]->type == AST_LE ||
+		   node->son[1]->type == AST_NE ||
+		   node->son[1]->type == AST_EQ ||
+		   node->son[1]->type == AST_OR ||
+		   node->son[1]->type == AST_AND||
+       node->son[1]->type == AST_NOT){
 
 			  fprintf(stderr, "ERRO: Operando direito não pode ser logico. \n");
 			  exitCode = 4;
 		}
 	}
-		
-	if (node->type == ASTREE_AND || node->type == ASTREE_OR || node->type == ASTREE_NOT){
-	
-		if(node->son[0]->type == ASTREE_MUL ||
-		   node->son[0]->type == ASTREE_ADD || 
-		   node->son[0]->type == ASTREE_SUB || 
-		   node->son[0]->type == ASTREE_DIV){
+
+	if (node->type == AST_AND || node->type == AST_OR || node->type == AST_NOT){
+
+		if(node->son[0]->type == AST_MUL ||
+		   node->son[0]->type == AST_ADD ||
+		   node->son[0]->type == AST_SUB ||
+		   node->son[0]->type == AST_DIV){
 
 			  fprintf(stderr, "ERRO: Operando esquerdo não pode ser aritmético. \n");
 			  exitCode = 4;
 		}
-		if(node->son[1]->type == ASTREE_MUL ||
-		   node->son[1]->type == ASTREE_ADD || 
-		   node->son[1]->type == ASTREE_SUB || 
-		   node->son[1]->type == ASTREE_DIV){
+		if(node->son[1]->type == AST_MUL ||
+		   node->son[1]->type == AST_ADD ||
+		   node->son[1]->type == AST_SUB ||
+		   node->son[1]->type == AST_DIV){
 
 			  fprintf(stderr, "ERRO: Operando direito não pode ser aritmético. \n");
 			  exitCode = 4;
 		}
 	}
-	
+
 	for (i=0; i<MAX_SONS; ++i)
     semanticCheckOperands(node->son[i]);
 
