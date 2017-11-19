@@ -10,7 +10,7 @@
 #define SYMBOL_IDENTIFIER 7
 #define SYMBOL_VAR 8
 #define SYMBOL_FUN 9
-#define SYMBOL_ARR 10
+#define SYMBOL_ARRAY 10
 
 /*
 * Filipe Joner
