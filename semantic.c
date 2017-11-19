@@ -1,6 +1,17 @@
 #include "semantic.h"
+/*
+  Etapa 4:
+  Filipe Joner
+  Vinícius Pittigliani Perego
+*/
 
 
+void checkSemantics(AST *node) {
+  emanticCheckUndeclared();
+  semanticSetTypes(node);
+  semanticCheckUsage(node);
+  semanticCheckOperands(node)
+}
 
 
 void semanticSetTypes(AST * node){
@@ -47,28 +58,34 @@ void semanticCheckUsage(AST * node){
   if(!node)  return;
 
   //check left-side assign TODO colocar AST_ATRIB_ARRAY aqui tambem ?
-  if(node->type == AST_ATRIB){
-    if(node->symbol->type != SYMBOL_VAR){
-      fprintf(stderr, "SEMANTIC ERROR: identifier %s must be scalar",node->symbol->text);
-      exitCode = 4;
-    }
+  switch(node->type){
+    case AST_ATRIB:
+      if(node->symbol->type != SYMBOL_VAR) {
+        fprintf(stderr, "SEMANTIC ERROR: identifier %s must be scalar",node->symbol->text);
+        exitCode = 4;
+      }
+      break;
+  
+    //check right-side assign TODO colocar AST_ATRIB_ARRAY aqui tambem ?
+    case AST_SYMBOL:
+      if(node->symbol->type != SYMBOL_FUN){
+        fprintf(stderr, "SEMANTIC ERROR: identifier %s must be scalar",node->symbol->text);
+        exitCode = 4;
+      }
+      break;
+  
+  
+    //check if function calls are functions TODO colocar AST_ATRIB_ARRAY aqui tambem ?
+    case AST_FUNC:
+      if(node->symbol->type != SYMBOL_FUN){
+        fprintf(stderr, "SEMANTIC ERROR: identifier %s must be function",node->symbol->text);
+        exitCode = 4;
+      }
+    break;
+  
+  
   }
 
-  //check right-side assign TODO colocar AST_ATRIB_ARRAY aqui tambem ?
-  if(node->type == AST_SYMBOL){
-    if(node->symbol->type != SYMBOL_FUN){
-      fprintf(stderr, "SEMANTIC ERROR: identifier %s must be scalar",node->symbol->text);
-      exitCode = 4;
-    }
-  }
-
-  //check if function calls are functions TODO colocar AST_ATRIB_ARRAY aqui tambem ?
-  if(node->type == AST_FUNC){
-    if(node->symbol->type != SYMBOL_FUN){
-      fprintf(stderr, "SEMANTIC ERROR: identifier %s must be function",node->symbol->text);
-      exitCode = 4;
-    }
-  }
 }
 
 void semanticCheckOperands(AST *node){
