@@ -80,6 +80,24 @@ void setSymbolDataType(AST * node)
     }
 }
 
+int checkParameters(AST * node){
+  int totalParams = 1;
+  while(node->son[1]->type == AST_LIST_ARG){
+    if(node->son[0]->type != AST_ARG_ID)
+    node = node->son[1];
+    totalParams++;
+  }
+  return totalParams;
+}
+
+int countParameters(AST * node){
+  int totalParams = 1;
+  while(node->son[1]->type == AST_LIST_ARG){
+    node = node->son[1];
+    totalParams++;
+  }
+  return totalParams;
+}
 
 void semanticSetTypes(AST * node){
 
@@ -102,6 +120,9 @@ void semanticSetTypes(AST * node){
     }else{
       node->symbol->type = SYMBOL_FUN;
       node->symbol->dataType = setDataType(node->son[0]->type);
+      if(node->son[2]){
+           node->symbol->parametersNumber = countParameters(node->son[1]);
+      }
     }
   }
 
@@ -125,43 +146,7 @@ void semanticSetTypes(AST * node){
     }
     else {
       node->symbol->type = SYMBOL_VAR;
-      switch (node->son[0]->type) {
-        case AST_BYTE:
-          node->symbol->dataType = DATATYPE_BYTE;
-          break;
-
-        case AST_CHAR:
-          node->symbol->dataType = DATATYPE_CHAR;
-          break;
-
-        case AST_SHORT:
-          node->symbol->dataType = DATATYPE_SHORT;
-          break;
-
-        case AST_LONG:
-          node->symbol->dataType = DATATYPE_LONG;
-          break;
-
-        case AST_FLOAT:
-          node->symbol->dataType = DATATYPE_FLOAT;
-          break;
-
-        case AST_DOUBLE:
-          node->symbol->dataType = DATATYPE_DOUBLE;
-          break;
-
-        case AST_INTEGER:
-          node->symbol->dataType = DATATYPE_INT;
-          break;
-
-        case AST_REAL:
-          node->symbol->dataType = DATATYPE_REAL;
-          break;
-
-        default:
-          break;
-      }
-
+      node->symbol->dataType = setDataType(node->son[0]->type);
     }
   }
 
@@ -222,6 +207,10 @@ void semanticCheckUsage(AST * node){
     case AST_FUNC:
       if(node->symbol->type != SYMBOL_FUN){
         fprintf(stderr, "SEMANTIC ERROR: identifier %s must be function",node->symbol->text);
+        exitCode = 4;
+      }
+      if(node->symbol->parametersNumber != countParameters(node->son[0])){
+        fprintf(stderr, "SEMANTIC ERROR: function %s has wrong number of parameters",node->symbol->text);
         exitCode = 4;
       }
       checkParams(node->son[0]);
@@ -332,5 +321,10 @@ int setDataType(int nodeType){
 }
 
 void checkParams(AST* node){
-  //TODO
-}
+  while(node->son[1]->type == AST_LIST_ARG ){
+    // if(node->son[0]->dataTy != AST_ARG_ID){
+    // TODO 
+    // }
+    node = node->son[1];
+  }
+ }
