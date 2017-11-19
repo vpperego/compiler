@@ -95,10 +95,61 @@ void semanticCheckOperands(AST *node){
   // if(node->type == AST_ADD || node->type == AST_MUL){
   //   if(node->son[0] != AST_ADD || node->son[0] != AST_MUL || node->son[0] !=)
   // }
+  int i;
+	if (!node) return;
+	
+	if (node->type == ASTREE_ADD || node->type == ASTREE_SUB || node->type == ASTREE_MUL || node->type == ASTREE_DIV || node->type == ASTREE_G || node->type == ASTREE_L || node->type == ASTREE_NE || node->type == ASTREE_EQ || node->type == ASTREE_LE || node->type == ASTREE_GE){
+		if(node->son[0]->type == ASTREE_G ||
+		   node->son[0]->type == ASTREE_L || 
+		   node->son[0]->type == ASTREE_GE || 
+		   node->son[0]->type == ASTREE_LE || 
+		   node->son[0]->type == ASTREE_NE || 
+		   node->son[0]->type == ASTREE_EQ || 
+		   node->son[0]->type == ASTREE_OR || 
+		   node->son[0]->type == ASTREE_AND|| 
+       node->son[0]->type == ASTREE_NOT){
 
-  for(i=0; i < MAX_SONS; ++i){
-    semanticSetTypes(node->son[i]);
-  }
+			  fprintf(stderr, "ERRO: Operando esquerdo não pode ser logico. \n");
+			  exitCode = 4;
+		}
+		if(node->son[1]->type == ASTREE_G ||
+		   node->son[1]->type == ASTREE_L || 
+		   node->son[1]->type == ASTREE_GE || 
+		   node->son[1]->type == ASTREE_LE || 
+		   node->son[1]->type == ASTREE_NE || 
+		   node->son[1]->type == ASTREE_EQ || 
+		   node->son[1]->type == ASTREE_OR || 
+		   node->son[1]->type == ASTREE_AND|| 
+       node->son[1]->type == ASTREE_NOT){
+
+			  fprintf(stderr, "ERRO: Operando direito não pode ser logico. \n");
+			  exitCode = 4;
+		}
+	}
+		
+	if (node->type == ASTREE_AND || node->type == ASTREE_OR || node->type == ASTREE_NOT){
+	
+		if(node->son[0]->type == ASTREE_MUL ||
+		   node->son[0]->type == ASTREE_ADD || 
+		   node->son[0]->type == ASTREE_SUB || 
+		   node->son[0]->type == ASTREE_DIV){
+
+			  fprintf(stderr, "ERRO: Operando esquerdo não pode ser aritmético. \n");
+			  exitCode = 4;
+		}
+		if(node->son[1]->type == ASTREE_MUL ||
+		   node->son[1]->type == ASTREE_ADD || 
+		   node->son[1]->type == ASTREE_SUB || 
+		   node->son[1]->type == ASTREE_DIV){
+
+			  fprintf(stderr, "ERRO: Operando direito não pode ser aritmético. \n");
+			  exitCode = 4;
+		}
+	}
+	
+	for (i=0; i<MAX_SONS; ++i)
+    semanticCheckOperands(node->son[i]);
+
 }
 
 void semanticCheckUndeclared(){
