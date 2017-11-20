@@ -230,11 +230,11 @@ void semanticCheckOperands(AST *node){
 	if (checkArithmeticType(node->type)
       || node->type == AST_LESS || node->type == AST_MORE || node->type == AST_NE || node->type == AST_EQ || node->type == AST_LE || node->type == AST_GE){
 		if(checkBooleanType(node->son[0]->type)){
-			  fprintf(stderr, "ERRO: Operando esquerdo não pode ser logico. \n");
+			  fprintf(stderr, "SEMANTIC ERROR: cannot have left logical operand. \n");
 			  exitCode = 4;
 		}
 		if(checkBooleanType(node->son[1]->type)){
-			  fprintf(stderr, "ERRO: Operando direito não pode ser logico. \n");
+			  fprintf(stderr, "SEMANTIC ERROR: cannot have right logical operand. \n");
 			  exitCode = 4;
 		}
 	}
@@ -246,7 +246,7 @@ void semanticCheckOperands(AST *node){
 		   node->son[0]->type == AST_SUB ||
 		   node->son[0]->type == AST_DIV){
 
-			  fprintf(stderr, "ERRO: Operando esquerdo não pode ser aritmético. \n");
+			  fprintf(stderr, "SEMANTIC ERROR: cannot have left arithmetic operand. \n");
 			  exitCode = 4;
 		}
 		if(node->son[1]->type == AST_MUL ||
@@ -254,7 +254,7 @@ void semanticCheckOperands(AST *node){
 		   node->son[1]->type == AST_SUB ||
 		   node->son[1]->type == AST_DIV){
 
-			  fprintf(stderr, "ERRO: Operando direito não pode ser aritmético. \n");
+			  fprintf(stderr, "SEMANTIC ERROR: cannot have right arithmeic operand. \n");
 			  exitCode = 4;
 		}
 	}
