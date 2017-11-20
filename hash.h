@@ -11,7 +11,7 @@
 #define SYMBOL_VAR 8
 #define SYMBOL_FUN 9
 #define SYMBOL_ARRAY 10
-
+#define SYMBOL_ARG_ID 11
 /*
 * Filipe Joner
 * Vinícius Pittigliani Perego

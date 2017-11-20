@@ -14,8 +14,6 @@ void checkParams(AST* node, HASH_NODE * parameters);
 HASH_NODE * setFuncParameters (AST * node);
 
 void checkSemantics(AST *node) {
-   semanticCheckUndeclared();
-
   semanticSetTypes(node);
   semanticCheckUndeclared();
   semanticCheckUsage(node);
@@ -107,47 +105,51 @@ void semanticSetTypes(AST * node){
 
   if(node->type == AST_VARDEC){
     if(node->symbol->type != SYMBOL_IDENTIFIER){
-      fprintf(stderr, "SEMANTIC ERROR: identifier %s already declared\n",node->symbol->text );
+      fprintf(stderr, "SEMANTIC ERROR: identifier %s already declared AST_VARDEC\n",node->symbol->text );
       exitCode = 4;
     }else{
       node->symbol->type = SYMBOL_VAR;
       node->symbol->dataType = setDataType(node->son[0]->type);
     }
-  } else if(node->type == AST_FUNDEC){
-
+  }else if(node->type == AST_INIT_ARRAY){
     if(node->symbol->type != SYMBOL_IDENTIFIER){
-      fprintf(stderr, "SEMANTIC ERROR: identifier %s already declared\n",node->symbol->text );
+      fprintf(stderr, "SEMANTIC ERROR: identifier %s already declared AST_VARDEC\n",node->symbol->text );
+      exitCode = 4;
+    }else{
+      node->symbol->type = SYMBOL_VAR;
+      node->symbol->dataType = setDataType(node->son[0]->type);
+    }
+  }else if(node->type == AST_FUNDEC){
+    if(node->symbol->type != SYMBOL_IDENTIFIER){
+      fprintf(stderr, "SEMANTIC ERROR: identifier %s already declared AST_FUNDEC\n",node->symbol->text );
       exitCode = 4;
     }else{
       node->symbol->type = SYMBOL_FUN;
       node->symbol->dataType = setDataType(node->son[0]->type);
       if(node->son[2]){
            node->symbol->parametersNumber = countParameters(node->son[1]);
+           node->symbol->funcParameters = setFuncParameters(node->son[1]);
       }
-      node->symbol->funcParameters = setFuncParameters(node->son[1]);
     }
   }
-
+  else if(node->type == AST_ARG_ID){
+    if(node->symbol->type != SYMBOL_IDENTIFIER){
+      fprintf(stderr, "SEMANTIC ERROR: parameter %s already declared\n",node->symbol->text );
+      exitCode = 4;
+    }else{
+      node->symbol->type = SYMBOL_ARG_ID;
+      node->symbol->dataType = setDataType(node->son[0]->type);
+    }
+  }
   else if(node->type == AST_ATRIB_ARRAY) {
-    if(node->symbol->type != SYMBOL_IDENTIFIER){
-      fprintf(stderr, "SEMANTIC ERROR: identifier %s already declared\n",node->symbol->text );
-      exitCode = 4;
-    }
-    else{
-      node->symbol->type = SYMBOL_ARRAY;
-      node->symbol->dataType = setDataType(node->son[0]->type);
-    }
-  }
-
-  else if(node->type == AST_PARAM) {
-    if(node->symbol->type != SYMBOL_IDENTIFIER){
-      fprintf(stderr, "SEMANTIC ERROR: identifier %s already declared\n",node->symbol->text );
-      exitCode = 4;
-    }
-    else {
-      node->symbol->type = SYMBOL_VAR;
-      node->symbol->dataType = setDataType(node->son[0]->type);
-    }
+    // if(node->symbol->type != SYMBOL_IDENTIFIER){TODO - isso precisa estar aqui?
+    //   fprintf(stderr, "SEMANTIC ERROR: identifier %s already declared AST_ATRIB_ARRAY\n",node->symbol->text );
+    //   exitCode = 4;
+    // }
+    // else{
+    // }
+    node->symbol->type = SYMBOL_ARRAY;
+    node->symbol->dataType = setDataType(node->son[0]->type);
   }
 
   for(i=0; i < MAX_SONS; ++i){
@@ -333,15 +335,18 @@ void checkParams(AST* node, HASH_NODE * parameters){
 }
 
 HASH_NODE * setFuncParameters (AST * node){
-  HASH_NODE * iterator=NULL;
-  // HASH_NODE * funcParameters  = malloc(sizeof( HASH_NODE *));;
-  HASH_NODE * funcParameters = node->son[0]->symbol;
+  HASH_NODE * iterator = NULL;
+
+  HASH_NODE * funcParameters  = malloc(sizeof( HASH_NODE *));
+  funcParameters = node->son[0]->symbol;
+
   funcParameters->next = iterator;
-  while(node->son[1]->type != AST_LIST_ARG){
+   while(node->son[1]->type == AST_LIST_ARG){
     node = node->son[1];
-    iterator->next = node->son[0]->symbol;
+    iterator = malloc(sizeof( HASH_NODE *));
+    iterator = node->son[0]->symbol;
     iterator = iterator->next;
+    iterator->next = NULL;
   }
-  iterator->next = NULL;
   return funcParameters;
 }
