@@ -101,6 +101,21 @@ int countParameters(AST * node){
   return totalParams;
 }
 
+int getArithmeticType(int type1, int type2)
+{
+    if (type1 == DATATYPE_BOOL || type2 == DATATYPE_BOOL)
+        return DATATYPE_UNDEF;
+    
+    // this makes sense since the datatypes are declared 
+    // in a ascending order of "wideness" (i.e. datatypes declared
+    // after in hash.h are bigger)
+    if (type1 > type2) {
+        return type1;
+    } else {
+        return type2;
+    }
+}
+
 void semanticSetTypes(AST * node){
 
   int i;
@@ -242,6 +257,14 @@ void semanticCheckOperands(AST *node){
 			  fprintf(stderr, "SEMANTIC ERROR: cannot have right logical operand. \n");
 			  exitCode = 4;
 		}
+
+    if (node->type != AST_DIV) {
+      node->symbol->dataType = getArithmeticType(node->sons[0]->dataType, node->sons[1]->dataType);
+    } else {
+       // TODO: divisão gera sempre float/double ou qualquer coisa?
+       node->symbol->dataType = DATATYPE_DOUBLE;
+    }
+
 	}
 
 	if (node->type == AST_AND || node->type == AST_OR || node->type == AST_NOT){
