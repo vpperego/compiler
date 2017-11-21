@@ -90,11 +90,14 @@ int checkParameters(AST * node){
 }
 
 int countParameters(AST * node){
+  if(!node->son[1]) return 1;
   int totalParams = 1;
-  while(node->son[1]->type == AST_LIST_ARG){
+
+  do{
     node = node->son[1];
     totalParams++;
-  }
+  }while(node->son[1] && node->son[1]->type == AST_LIST_ARG);
+
   return totalParams;
 }
 
@@ -128,11 +131,12 @@ void semanticSetTypes(AST * node){
       node->symbol->dataType = setDataType(node->son[0]->type);
       if(node->son[2]){
            node->symbol->parametersNumber = countParameters(node->son[1]);
-           node->symbol->funcParameters = setFuncParameters(node->son[1]);
+          //  node->symbol->funcParameters = setFuncParameters(node->son[1]);
       }
     }
   }
   else if(node->type == AST_ARG_ID){
+    fprintf(stderr, "setDataType de AST_ARG_ID\n");
     if(node->symbol->type != SYMBOL_IDENTIFIER){
       fprintf(stderr, "SEMANTIC ERROR: parameter %s already declared\n",node->symbol->text );
       exitCode = 4;
@@ -191,14 +195,12 @@ void semanticCheckUsage(AST * node){
         fprintf(stderr, "SEMANTIC ERROR: if conditional must be boolean");
       }
     break;
-    case AST_IF_ELSE: //TODO
-    if(checkBooleanType(node->son[0]->type)){
-      fprintf(stderr, "SEMANTIC ERROR: if conditional must be boolean");
-    }
-    if(node->son[1]->symbol->dataType != node->son[2]->symbol->dataType){
-      fprintf(stderr, "SEMANTIC ERROR: if types must be equal");
-    }
-    break;
+    case AST_IF_ELSE:
+      if(checkBooleanType(node->son[0]->type)){
+        fprintf(stderr, "SEMANTIC ERROR: if conditional must be boolean");
+      }
+
+      break;
     case AST_WHILE:
       if(checkBooleanType(node->son[0]->type)){
         fprintf(stderr, "SEMANTIC ERROR: While conditional must be boolean");
@@ -207,20 +209,23 @@ void semanticCheckUsage(AST * node){
 
     //check if function calls are functions
     case AST_FUNC:
+      fprintf(stderr,"\nAST_FUNC\n");
       if(node->symbol->type != SYMBOL_FUN){
         fprintf(stderr, "SEMANTIC ERROR: identifier %s must be function",node->symbol->text);
         exitCode = 4;
       }
+        fprintf(stderr, "node->symbol->parametersNumber = %d\n",node->symbol->parametersNumber);
+        fprintf(stderr, "countParameters(node->son[0]) = %d\n",countParameters(node->son[0]));
+
       if(node->symbol->parametersNumber != countParameters(node->son[0])){
         fprintf(stderr, "SEMANTIC ERROR: function %s has wrong number of parameters",node->symbol->text);
         exitCode = 4;
       }
-      checkParams(node->son[0],node->symbol->funcParameters);
+      // checkParams(node->son[0],node->symbol->funcParameters);
     break;
-
-
   }
-
+  for (i=0; i<MAX_SONS; ++i)
+    semanticCheckUsage(node->son[i]);
 }
 
 void semanticCheckOperands(AST *node){
@@ -241,19 +246,12 @@ void semanticCheckOperands(AST *node){
 
 	if (node->type == AST_AND || node->type == AST_OR || node->type == AST_NOT){
 
-		if(node->son[0]->type == AST_MUL ||
-		   node->son[0]->type == AST_ADD ||
-		   node->son[0]->type == AST_SUB ||
-		   node->son[0]->type == AST_DIV){
+		if(checkArithmeticType(node->son[0]->type)){
 
 			  fprintf(stderr, "SEMANTIC ERROR: cannot have left arithmetic operand. \n");
 			  exitCode = 4;
 		}
-		if(node->son[1]->type == AST_MUL ||
-		   node->son[1]->type == AST_ADD ||
-		   node->son[1]->type == AST_SUB ||
-		   node->son[1]->type == AST_DIV){
-
+		if(checkArithmeticType(node->son[1]->type)){
 			  fprintf(stderr, "SEMANTIC ERROR: cannot have right arithmeic operand. \n");
 			  exitCode = 4;
 		}
@@ -261,7 +259,6 @@ void semanticCheckOperands(AST *node){
 
 	for (i=0; i<MAX_SONS; ++i)
     semanticCheckOperands(node->son[i]);
-
 }
 
 void semanticCheckUndeclared(){
@@ -323,30 +320,51 @@ int setDataType(int nodeType){
 }
 
 void checkParams(AST* node, HASH_NODE * parameters){
-  while(node->son[1]->type == AST_LIST_ARG ){
+
+  // do{
+  //   parameters = parameters->next;
+  // }while(PA);
+  do{
+
     if(node->son[0]->symbol->dataType != parameters->dataType){
       fprintf(stderr, "SEMANTIC ERROR: Function parameter type is wrong!\n" );
       exitCode = 4;
       break;
     }
+
     parameters = parameters->next;
+
     node = node->son[1];
-  }
+
+  }while(node->son[1] && node->son[1]->type == AST_LIST_ARG );
 }
 
 HASH_NODE * setFuncParameters (AST * node){
-  HASH_NODE * iterator = NULL;
+  HASH_NODE * iterator = 0;
 
   HASH_NODE * funcParameters  = malloc(sizeof( HASH_NODE *));
-  funcParameters = node->son[0]->symbol;
+  funcParameters->dataType = node->son[0]->symbol->dataType;
 
   funcParameters->next = iterator;
-   while(node->son[1]->type == AST_LIST_ARG){
+
+  if(!node->son[1]) return funcParameters;
+
+  while(node->son[1] && node->son[1]->type == AST_LIST_ARG){
+
     node = node->son[1];
-    iterator = malloc(sizeof( HASH_NODE *));
-    iterator = node->son[0]->symbol;
-    iterator = iterator->next;
-    iterator->next = NULL;
+    iterator =  malloc(sizeof( HASH_NODE *));
+
+    iterator->dataType = node->son[0]->symbol->dataType;
+
+    iterator =  iterator->next;
+
   }
+
+  iterator =  malloc(sizeof( HASH_NODE *));
+
+  iterator->dataType = node->son[1]->symbol->dataType;
+
+  iterator->next = NULL;
+
   return funcParameters;
 }
