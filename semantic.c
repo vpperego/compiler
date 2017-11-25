@@ -421,7 +421,7 @@ HASH_NODE * setFuncParameters (AST * node){
     nodeIterator = nodeIterator->son[1];
 
     if(!nodeIterator->son[1]){
-      // fprintf(stderr,"TESTAND %s %d\n",nodeIterator->symbol->text,nodeIterator->symbol-);
+       fprintf(stderr,"TESTAND %s %d\n",nodeIterator->symbol->text,nodeIterator->symbol->dataType);
 
       iterator  = nodeIterator->symbol;
       iterator->next = 0;
