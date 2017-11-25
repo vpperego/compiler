@@ -1,6 +1,7 @@
 #ifndef HASH_H
 #define HASH_H
 
+
 #define HASH_SIZE 999
 
 #define SYMBOL_LIT_INT 1
@@ -18,11 +19,11 @@
 * Filipe Joner
 * Vinícius Pittigliani Perego
 */
-typedef struct  hash_node {
+ typedef struct  hash_node {
   int type;
   int dataType;
   int parametersNumber;
-  struct hash_node * funcParameters;
+  void * parameters;
   char * text;
   struct hash_node * next;
 }HASH_NODE;

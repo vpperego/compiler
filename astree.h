@@ -6,6 +6,7 @@
 #include "hash.h"
 #define MAX_SONS 4
 
+
 enum AST_TYPE{
   AST_SYMBOL,
   AST_ADD,

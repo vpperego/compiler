@@ -10,14 +10,13 @@ int checkArithmeticType(int type);
 
 int setDataType(int nodeType);
 
-void checkParams(AST* node, HASH_NODE * parameters);
-HASH_NODE * setFuncParameters (AST * node);
+void checkParams(AST* node, AST * parameters);
+//HASH_NODE * setFuncParameters (AST * node);
 
 void checkSemantics(AST *node) {
   semanticSetTypes(node);
   semanticCheckUndeclared();
   semanticCheckUsage(node);
-  fprintf(stderr, "Checado operandos\n" );
   semanticCheckOperands(node);
 }
 
@@ -170,7 +169,7 @@ void semanticSetTypes(AST * node){
       node->symbol->dataType = setDataType(node->son[0]->type);
       if(node->son[2]){
            node->symbol->parametersNumber = countParameters(node->son[1]);
-            node->symbol->funcParameters = setFuncParameters(node->son[1]);
+            node->symbol->parameters = node->son[1];
             fprintf(stderr, "depois de setFuncParameters %s\n",node->symbol->text);
       }
     }
@@ -265,16 +264,12 @@ void semanticCheckUsage(AST * node){
         fprintf(stderr, "SEMANTIC ERROR: identifier %s must be function\n",node->symbol->text);
         exitCode = 4;
       }
-        // fprintf(stderr, "node->symbol->parametersNumber = %d\n",node->symbol->parametersNumber);
-        // fprintf(stderr, "countParameters(node->son[0]) = %d\n",countParameters(node->son[0]));
-
-        if(node->symbol->parametersNumber != countParameters(node->son[0])){
-          fprintf(stderr, "SEMANTIC ERROR: function %s has wrong number of parameters\n",node->symbol->text);
-
-          exitCode = 4;
+      if(node->symbol->parametersNumber != countParameters(node->son[0])){
+        fprintf(stderr, "SEMANTIC ERROR: function %s has wrong number of parameters\n",node->symbol->text);
+        exitCode = 4;
       }
-       checkParams(node->son[0],node->symbol->funcParameters);
-      fprintf(stderr, "Terminei a parte de funcao...\n" );
+      checkParams(node->son[0],node->symbol->parameters);
+      // fprintf(stderr, "Terminei a parte de funcao...\n" );
     break;
   }
   for (i=0; i<MAX_SONS; ++i)
@@ -297,7 +292,7 @@ void semanticCheckOperands(AST *node){
 		}
 
     if (node->type != AST_DIV) {
-      node->symbol->dataType = getArithmeticType(node->son[0]->symbol->dataType, node->son[1]->symbol->dataType);
+  //    node->symbol->dataType = getArithmeticType(node->son[0]->symbol->dataType, node->son[1]->symbol->dataType); TODO -ISSO NAO VAI SER FEITO AQUI
     } else {
        // TODO: divisão gera sempre float/double ou qualquer coisa?
        node->symbol->dataType = DATATYPE_DOUBLE;
@@ -380,56 +375,56 @@ int setDataType(int nodeType){
     }
 }
 
-void checkParams(AST* node, HASH_NODE * parameters){
-  fprintf(stderr,"checkParams\n");
-  AST* nodeIterator = node;
-  do{
-
+void checkParams(AST* node, AST * parameters){
+   AST* nodeIterator = node;
+  while(1){
     if(!nodeIterator->son[1])
     {
-      fprintf(stderr, "NODE : %d FUNC: %d %s\n", nodeIterator->symbol->dataType,parameters->dataType,parameters->text);
-      if(compareDataType(nodeIterator->symbol->dataType,parameters->dataType)){
+
+    if(!compareDataType(nodeIterator->symbol->dataType,parameters->symbol->dataType)){
+
         fprintf(stderr, "SEMANTIC ERROR: Function parameter type is wrong...\n" );
         exitCode = 4;
       }
       break;
     }
-    if(!compareDataType(nodeIterator->son[0]->symbol->dataType,parameters->dataType)){
+    if(!compareDataType(nodeIterator->son[0]->symbol->dataType, parameters->son[0]->symbol->dataType)){
       fprintf(stderr, "SEMANTIC ERROR: Function parameter type is wrong...\n" );
       exitCode = 4;
     }
-
-    parameters = parameters->next;
+    parameters = parameters->son[1];
+    // fprintf(stderr, "identifier : %s dataType: %d\n", parameters->symbol->text,parameters->symbol->dataType);
     nodeIterator = nodeIterator->son[1];
-   }while(nodeIterator);
+  }
 }
 
-HASH_NODE * setFuncParameters (AST * node){
-  HASH_NODE * head = malloc(sizeof(HASH_NODE));
-
-  AST * nodeIterator = node;
-  head  = nodeIterator->son[0]->symbol ;
-   if(!nodeIterator->son[1]){
-
-     head->next = 0;
-    return head;
-  }
-  HASH_NODE * iterator = malloc(sizeof(HASH_NODE));;
-  head->next = iterator;
-  while (1) {
-    // fprintf(stderr,"setFuncParameters node->son[0]->symbol->dataType = %d \n",node->son[0]->symbol->dataType);
-    nodeIterator = nodeIterator->son[1];
-
-    if(!nodeIterator->son[1]){
-       fprintf(stderr,"TESTAND %s %d\n",nodeIterator->symbol->text,nodeIterator->symbol->dataType);
-
-      iterator  = nodeIterator->symbol;
-      iterator->next = 0;
-      return head;
-    }
-    iterator  = nodeIterator->son[0]->symbol ;
-    iterator->next = malloc(sizeof(HASH_NODE));
-    iterator = iterator->next;
-  }
-
- }
+// HASH_NODE * setFuncParameters (AST * node){
+//   HASH_NODE * head = malloc(sizeof(HASH_NODE));
+//
+//   AST * nodeIterator = node;
+//   head  = nodeIterator->son[0]->symbol ;
+//    if(!nodeIterator->son[1]){
+//
+//      head->next = 0;
+//     return head;
+//   }
+//   HASH_NODE * iterator = malloc(sizeof(HASH_NODE));;
+//   head->next = iterator;
+//   while (1) {
+//     // fprintf(stderr,"setFuncParameters node->son[0]->symbol->dataType = %d \n",node->son[0]->symbol->dataType);
+//     nodeIterator = nodeIterator->son[1];
+//
+//     if(!nodeIterator->son[1]){
+//        fprintf(stderr,"TESTAND %s %d\n",nodeIterator->symbol->text,nodeIterator->symbol->dataType);
+//
+//       iterator  = nodeIterator->symbol;
+//       fprintf(stderr,"A PARTIR DE HEAD =  %s \n",head->next->text);
+//       iterator->next = 0;
+//       return head;
+//     }
+//     iterator  = nodeIterator->son[0]->symbol ;
+//     iterator->next = malloc(sizeof(HASH_NODE));
+//     iterator = iterator->next;
+//   }
+//
+//  }
