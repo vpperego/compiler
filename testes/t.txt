@@ -1,15 +1,18 @@
 // UFRGS - Compiladores - Marcelo Johann - 2017/2
 
+a: short = 0;
 i: long = 0;
-
-x: long = 4;
-(long) main()
-  {
-  i = incn(1);
-  }
+v: long[10] 0 0 0 0 0 0 0 0 0 0;
+mat: long[10];
+f: float = 10.55;
+c: byte = 'x';
+d: byte = 65;
 
 (long) incn (x: long, n: long)
+  {return (x+n)}
 
+(long) main()
+  {
+   a = incn(a,1.0);
 
-
-(short) voidfunc() {}
+  }

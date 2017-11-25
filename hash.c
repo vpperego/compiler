@@ -32,6 +32,18 @@ int hashAddress(char * text){
   return address -1;
 }
 
+HASH_NODE * getHashBydataType(char *text,int dataType){
+  HASH_NODE *node;
+  int address = hashAddress(text);
+  for (node = table[address]; node; node = node->next) {
+    if(node->dataType == dataType) {
+      return node;
+    }
+  }
+  return NULL;
+}
+
+
 HASH_NODE * hashInsert(int type, char *text){
   HASH_NODE *newNode;
   HASH_NODE *node;

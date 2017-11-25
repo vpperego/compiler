@@ -83,7 +83,7 @@
 
 /* Exemplos tirados da aula do professor*/
 program : listdecl      {root = $1;
-                        astPrint(root,0);
+                      //  astPrint(root,0);
                         checkSemantics(root);}
     ;
 

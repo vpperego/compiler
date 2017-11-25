@@ -12,6 +12,8 @@
 #define SYMBOL_FUN 9
 #define SYMBOL_ARRAY 10
 #define SYMBOL_ARG_ID 11
+#define SYMBOL_SCALAR 12
+#define SYMBOL_UNDEF 13
 /*
 * Filipe Joner
 * Vinícius Pittigliani Perego
@@ -33,4 +35,5 @@ void initMe(void);
 HASH_NODE * hashInsert(int type, char *text);
 void hashPrint();
 void hashCheckUndeclared();
+HASH_NODE * getHashByDatatype(char *text,int datatype);
 #endif
