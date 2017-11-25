@@ -40,44 +40,13 @@ int setSymbolType(int type)
         case AST_PARAM:
             return SYMBOL_SCALAR;
             break;
+        case AST_ATRIB_ARRAY:
+            return SYMBOL_SCALAR;
+            break;
 
         default:
             return SYMBOL_UNDEF;
             break;
-    }
-}
-
-/* sets hash symbol datatype based on ast node type */
-void setSymbolDataType(AST * node)
-{
-    switch (node->son[0]->type) {
-        case AST_BYTE:
-            node->symbol->dataType = DATATYPE_BYTE;
-            break;
-
-	    case AST_SHORT:
-            node->symbol->dataType = DATATYPE_SHORT;
-            break;
-
-	    case AST_LONG:
-            node->symbol->dataType = DATATYPE_LONG;
-            break;
-
-	    case AST_FLOAT:
-            node->symbol->dataType = DATATYPE_FLOAT;
-            break;
-
-	    case AST_DOUBLE:
-            node->symbol->dataType = DATATYPE_DOUBLE;
-            break;
-
-        // case AST_LIT_INT:
-        //     node->symbol->dataType = DATATYPE_INT;
-        //     break;
-
-        // default:
-        //     node->symbol->dataType = SYMBOL_UNDEF;
-        //     break;
     }
 }
 
@@ -191,16 +160,16 @@ void semanticSetTypes(AST * node){
     // }
     // else{
     // }
-    node->symbol->type = SYMBOL_ARRAY;
+    node->symbol->type = setSymbolType (node->type);;
     node->symbol->dataType = setDataType(node->son[0]->type);
   }else if (node->type == AST_SYMBOL){
     node->symbol->type = setSymbolType (node->type);
   }else if (node->type == AST_INTEGER){
-    node->symbol->dataType = setSymbolType (node->type);
+    node->symbol->dataType = setDataType (node->type);
   }else if (node->type == AST_REAL){
-    node->symbol->dataType = setSymbolType (node->type);
+    node->symbol->dataType = setDataType (node->type);
   }else if (node->type == AST_CHAR){
-    node->symbol->dataType = setSymbolType (node->type);
+    node->symbol->dataType = setDataType (node->type);
   }
 
   for(i=0; i < MAX_SONS; ++i){
@@ -238,20 +207,20 @@ void semanticCheckUsage(AST * node){
     case AST_RETURN://TODO
     break;
     case AST_IF:
-      if(checkBooleanType(node->son[0]->type)){
+      if(!checkBooleanType(node->son[0]->type)){
         fprintf(stderr, "SEMANTIC ERROR: if conditional must be boolean");
         exitCode = 4;
       }
     break;
     case AST_IF_ELSE:
-      if(checkBooleanType(node->son[0]->type)){
+      if(!checkBooleanType(node->son[0]->type)){
         fprintf(stderr, "SEMANTIC ERROR: if conditional must be boolean");
         exitCode = 4;
       }
 
       break;
     case AST_WHILE:
-      if(checkBooleanType(node->son[0]->type)){
+      if(!checkBooleanType(node->son[0]->type)){
         fprintf(stderr, "SEMANTIC ERROR: While conditional must be boolean");
         exitCode = 4;
       }
@@ -364,7 +333,7 @@ int setDataType(int nodeType){
       break;
 
     case AST_INTEGER:
-      return DATATYPE_INT;
+      return DATATYPE_LONG;
       break;
 
     case AST_REAL:
@@ -381,15 +350,15 @@ void checkParams(AST* node, AST * parameters){
     if(!nodeIterator->son[1])
     {
 
-    if(!compareDataType(nodeIterator->symbol->dataType,parameters->symbol->dataType)){
-
-        fprintf(stderr, "SEMANTIC ERROR: Function parameter type is wrong...\n" );
+    if(!compareDataType(nodeIterator->symbol->dataType, parameters->symbol->dataType)){
+        fprintf(stderr, "Param:  %d hope is for : %d  \n",nodeIterator->symbol->dataType,parameters->symbol->dataType );
+        fprintf(stderr, "SEMANTIC ERROR: Function parameter type is wrong...LAST\n" );
         exitCode = 4;
       }
       break;
     }
     if(!compareDataType(nodeIterator->son[0]->symbol->dataType, parameters->son[0]->symbol->dataType)){
-      fprintf(stderr, "SEMANTIC ERROR: Function parameter type is wrong...\n" );
+      fprintf(stderr, "SEMANTIC ERROR: Function parameter type is wrong...FIRST\n" );
       exitCode = 4;
     }
     parameters = parameters->son[1];
