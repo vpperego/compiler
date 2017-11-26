@@ -103,6 +103,20 @@ void semanticSetTypes(AST * node){
   }
 }
 
+int isIndexValid(AST * node){
+
+  if (checkBooleanType(node->type)){
+     return 0;
+  }else if(checkArithmeticType(node->type)){
+     return (isIndexValid(node->son[0]) &&
+            (isIndexValid(node->son[1])));
+  }
+  else if (!isIntegerType(node->symbol->dataType)) {
+    return 0;
+  }
+  return 1;
+}
+
 void semanticCheckUsage(AST * node){
   int i;
   if(!node)  return;
@@ -119,20 +133,18 @@ void semanticCheckUsage(AST * node){
         fprintf(stderr, "SEMANTIC ERROR: identifier %s must be scalar AST_ATRIB_ARRAY\n",node->symbol->text);
         exitCode = 4;
       }
-      if(!isIntegerType(node->son[0]->symbol->dataType)){
+      fprintf(stderr, "AST_ATRIB_ARRAY\n" );
+      if(!isIndexValid(node->son[0])){
         fprintf(stderr, "SEMANTIC ERROR: vector index must be a integer value\n");
         exitCode = 4;
       }
       break;
 
     case AST_ARRAY:
-      fprintf(stderr, "BEFORE SEG FAULT\n");
-      if(!isIntegerType(node->son[0]->symbol->dataType)){
+      if(!isIndexValid(node->son[0])){
         fprintf(stderr, "SEMANTIC ERROR: vector index must be a integer value\n");
         exitCode = 4;
       }
-      fprintf(stderr, "AFTER SEG FAULT\n");
-
       break;
     case AST_SYMBOL:
      if(node->symbol->type != SYMBOL_SCALAR){
