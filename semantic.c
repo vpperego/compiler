@@ -43,25 +43,32 @@ int setSymbolType(int type)
         case AST_ATRIB_ARRAY:
             return SYMBOL_SCALAR;
             break;
-
+        case AST_ATRIB:
+            return SYMBOL_SCALAR;
+            break;
         default:
             return SYMBOL_UNDEF;
             break;
     }
 }
 
+int isIntegerType(int type){
+  return (type == DATATYPE_BYTE  ||
+      type == DATATYPE_SHORT ||
+      type == DATATYPE_LONG) ;
+}
+
+int isRealType(int type){
+  return (type == DATATYPE_FLOAT  ||
+          type == DATATYPE_DOUBLE );
+}
+
 int compareDataType(int type1,int type2){
-  if ((type1 == DATATYPE_BYTE  |
-      type1 == DATATYPE_SHORT |
-      type1 == DATATYPE_LONG) &&
-     (type2 == DATATYPE_BYTE  |
-      type2 == DATATYPE_SHORT |
-      type2 == DATATYPE_LONG)){
+  if ( isIntegerType(type1) &&
+       isIntegerType(type2))  {
       return 1;
-  }else if((type1 == DATATYPE_FLOAT  |
-          type1 == DATATYPE_DOUBLE )&&
-          (type1 == DATATYPE_FLOAT  |
-          type1 == DATATYPE_DOUBLE ))
+  }else if(isRealType(type1) &&
+          isRealType(type2))
   {
     return 1;
   }else{
@@ -154,12 +161,9 @@ void semanticSetTypes(AST * node){
     }
   }
   else if(node->type == AST_ATRIB_ARRAY) {
-    // if(node->symbol->type != SYMBOL_IDENTIFIER){TODO - isso precisa estar aqui?
-    //   fprintf(stderr, "SEMANTIC ERROR: identifier %s already declared AST_ATRIB_ARRAY\n",node->symbol->text );
-    //   exitCode = 4;
-    // }
-    // else{
-    // }
+    node->symbol->type = setSymbolType (node->type);;
+    node->symbol->dataType = setDataType(node->son[0]->type);
+  }else if(node->type == AST_ATRIB) {
     node->symbol->type = setSymbolType (node->type);;
     node->symbol->dataType = setDataType(node->son[0]->type);
   }else if (node->type == AST_SYMBOL){
@@ -191,6 +195,10 @@ void semanticCheckUsage(AST * node){
     case AST_ATRIB_ARRAY:
       if(node->symbol->type != SYMBOL_SCALAR) {
         fprintf(stderr, "SEMANTIC ERROR: identifier %s must be scalar AST_ATRIB_ARRAY\n",node->symbol->text);
+        exitCode = 4;
+      }
+      if(!isIntegerType(node->son[0]->symbol->dataType)){
+        fprintf(stderr, "SEMANTIC ERROR: vector index must be a integer value\n");
         exitCode = 4;
       }
       break;

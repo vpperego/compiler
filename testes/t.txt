@@ -8,11 +8,9 @@ f: float = 10.55;
 c: byte = 'x';
 d: byte = 65;
 
-(long) incn (x: long, n: long)
-  {return (x+n)}
 
 (long) main()
   {
-   a = incn(a,1.0);
-
+  a = 10;
+  v[7] = v[10-1];
   }
