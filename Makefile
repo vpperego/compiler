@@ -4,11 +4,13 @@
 all: etapa4
 
 etapa4: y.tab.o lex.yy.o main.o hash.o astree.o semantic.o
-	gcc -o etapa4 lex.yy.o y.tab.o hash.o main.o astree.o semantic.o
+	gcc -o etapa4 lex.yy.o y.tab.o hash.o main.o astree.o semantic.o types.o
 main.o: main.c
 	gcc -c main.c
-semantic.o: semantic.c
+semantic.o: types.o semantic.c
 	gcc -c semantic.c
+types.o: types.c
+	gcc -c types.c
 hash.o: hash.c
 	gcc -c hash.c
 astree.o: astree.c
