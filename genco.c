@@ -20,6 +20,7 @@ TAC * tacJoin(TAC *l1, TAC *l2){
     tac = tac->prev;
   }
   tac->prev = l1;
+  //l1->next = l2; will be used to invert the tac three later
 
   return l2;
 }
@@ -57,11 +58,36 @@ TAC * tacGenerator(AST * node){
     code[i] = tacGenerator(node->son[i]);
   }
 
+
+  //TAC * tacCreate(int type, HASH_NODE * res, HASH_NODE * op1, HASH_NODE * op2) Just to remind the order of parameters
   switch (node->type) {
-    case TAC_SYMBOL: return tacCreate(TAC_SYMBOL, node->symbol, 0, 0); break;
-    case TAC_ADD:  fprintf(stderr,"TAC_ADD"); break;
-    case TAC_MUL:  fprintf(stderr,"TAC_MUL"); break;
-    case TAC_SUB:  fprintf(stderr,"TAC_SUB"); break;
+    case AST_SYMBOL: return tacCreate(TAC_SYMBOL, node->symbol, 0, 0); break;
+    case AST_ADD:  return tacGenerateOp(TAC_ADD, code[0], code[1]); break;
+    case AST_SUB:  return tacGenerateOp(TAC_SUB, code[0], code[1]); break;
+    case AST_MUL:  return tacGenerateOp(TAC_MUL, code[0], code[1]); break;
+    case AST_DIV:  return tacGenerateOp(TAC_DIV, code[0], code[1]); break;
+    case AST_LESS: return tacGenerateOp(TAC_LESS, code[0], code[1]); break;
+    case AST_MORE: return tacGenerateOp(TAC_MORE, code[0], code[1]); break;
+    case AST_LE:   return tacGenerateOp(TAC_LE, code[0], code[1]); break;
+    case AST_GE:   return tacGenerateOp(TAC_GE, code[0], code[1]); break;
+    case AST_EQ:   return tacGenerateOp(TAC_EQ, code[0], code[1]); break;
+    case AST_NE:   return tacGenerateOp(TAC_NE, code[0], code[1]); break;
+    case AST_AND:  return tacGenerateOp(TAC_AND, code[0], code[1]); break;
+    case AST_OR:   return tacGenerateOp(TAC_OR, code[0], code[1]); break;
+    case AST_BYTE: return tacCreate(TAC_BYTE, 0, 0, 0); break;
+    case AST_SHORT: return tacCreate(TAC_SHORT, 0, 0, 0); break;
+    case AST_LONG:  return tacCreate(TAC_LONG, 0, 0, 0); break;
+    case AST_FLOAT: return tacCreate(TAC_FLOAT, 0, 0, 0); break;
+    case AST_DOUBLE: return tacCreate(TAC_DOUBLE, 0, 0, 0); break;
+    case AST_CHAR:  return tacCreate(TAC_CHAR, 0, 0, 0); break;
+    case AST_INTEGER: return tacCreate(TAC_INTEGER, 0, 0, 0); break;
+    case AST_REAL:  return tacCreate(TAC_REAL, 0, 0, 0); break;
     default: break;
   }
+}
+
+
+TAC* tacGenerateOp(int type, TAC* op1, TAC* op2) {
+    return tacJoin(op1,
+                tacJoin(op2, tacCreate(type, makeTemp(), op1?op1->res:0, op2?op2->res:0)));
 }
