@@ -12,5 +12,8 @@ d: byte = 65;
 (long) main()
   {
   a = 10;
-  v[7] = v[2+2];
+  v[7] = v[incn(1,2)];
   }
+
+  (short) incn (x: long, n: long)
+    {return (x + n)}

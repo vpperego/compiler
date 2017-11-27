@@ -14,6 +14,37 @@ void checkSemantics(AST *node) {
   semanticCheckOperands(node);
 }
 
+
+int isExpressionValid(AST * node){
+
+  if (checkBooleanType(node->type)){
+     return 0;
+  }else if(node->type == AST_PARENTHESES){
+     return isExpressionValid(node->son[0]);
+  }
+  return 1;
+}
+
+int isReturnValid(AST * node){
+  AST * nodeIterator = node;
+  while(nodeIterator->type!= AST_CMD){
+     if(nodeIterator->son[0]->son[0]->type == AST_RETURN){
+      return isExpressionValid(nodeIterator->son[0]->son[0]->son[0]);
+    }
+    if(nodeIterator->type == AST_LIST_CMD){
+      nodeIterator = nodeIterator->son[1];
+    }
+  }
+  if(nodeIterator->son[0]!=0){
+    if(nodeIterator->son[0]->type == AST_RETURN){
+
+      return isExpressionValid(nodeIterator->son[0]->son[0]->son[0]);
+    }
+  }
+
+  return 1;
+}
+
 int checkParameters(AST * node){
   int totalParams = 1;
   while(node->son[1]->type == AST_LIST_ARG){
@@ -44,7 +75,7 @@ void semanticSetTypes(AST * node){
 
   if(node->type == AST_VARDEC){
     if(node->symbol->type != SYMBOL_IDENTIFIER){
-      fprintf(stderr, "SEMANTIC ERROR: identifier %s already declared AST_VARDEC\n",node->symbol->text );
+      fprintf(stderr, "SEMANTIC ERROR: identifier %s already declared\n",node->symbol->text );
       exitCode = 4;
     }else{
       node->symbol->type = SYMBOL_VAR;
@@ -52,7 +83,7 @@ void semanticSetTypes(AST * node){
     }
   }else if(node->type == AST_INIT_ARRAY){
     if(node->symbol->type != SYMBOL_IDENTIFIER){
-      fprintf(stderr, "SEMANTIC ERROR: identifier %s already declared AST_VARDEC\n",node->symbol->text );
+      fprintf(stderr, "SEMANTIC ERROR: identifier %s already declared\n",node->symbol->text );
       exitCode = 4;
     }else{
       node->symbol->type = SYMBOL_VAR;
@@ -60,15 +91,21 @@ void semanticSetTypes(AST * node){
     }
   }else if(node->type == AST_FUNDEC){
     if(node->symbol->type != SYMBOL_IDENTIFIER){
-      fprintf(stderr, "SEMANTIC ERROR: identifier %s already declared AST_FUNDEC\n",node->symbol->text );
+      fprintf(stderr, "SEMANTIC ERROR: identifier %s already declared\n",node->symbol->text );
       exitCode = 4;
     }else{
       node->symbol->type = SYMBOL_FUN;
       node->symbol->dataType = setDataType(node->son[0]->type);
       if(node->son[2]){
-           node->symbol->parametersNumber = countParameters(node->son[1]);
-            node->symbol->parameters = node->son[1];
-            fprintf(stderr, "depois de setFuncParameters %s\n",node->symbol->text);
+        node->symbol->parametersNumber = countParameters(node->son[1]);
+        node->symbol->parameters = node->son[1];
+        if(!isReturnValid(node->son[2]->son[0])){
+          fprintf(stderr, "SEMANTIC ERROR: function %s return is invalid\n",node->symbol->text );
+          exitCode = 4;
+        }
+      }else if(!isReturnValid(node->son[1]->son[0])){
+          fprintf(stderr, "SEMANTIC ERROR: function %s return is invalid\n",node->symbol->text );
+          exitCode = 4;
       }
     }
   }
@@ -133,16 +170,15 @@ void semanticCheckUsage(AST * node){
         fprintf(stderr, "SEMANTIC ERROR: identifier %s must be scalar AST_ATRIB_ARRAY\n",node->symbol->text);
         exitCode = 4;
       }
-      fprintf(stderr, "AST_ATRIB_ARRAY\n" );
       if(!isIndexValid(node->son[0])){
-        fprintf(stderr, "SEMANTIC ERROR: vector index must be a integer value\n");
+        fprintf(stderr, "SEMANTIC ERROR: vector index must be a integer value AST_ATRIB_ARRAY\n");
         exitCode = 4;
       }
       break;
 
     case AST_ARRAY:
       if(!isIndexValid(node->son[0])){
-        fprintf(stderr, "SEMANTIC ERROR: vector index must be a integer value\n");
+        fprintf(stderr, "SEMANTIC ERROR: vector index must be a integer value AST_ARRAY\n");
         exitCode = 4;
       }
       break;
@@ -179,7 +215,6 @@ void semanticCheckUsage(AST * node){
 
     //check if function calls are functions
     case AST_FUNC:
-      fprintf(stderr,"\nAST_FUNC\n");
       if(node->symbol->type != SYMBOL_FUN){
         fprintf(stderr, "SEMANTIC ERROR: identifier %s must be function\n",node->symbol->text);
         exitCode = 4;
