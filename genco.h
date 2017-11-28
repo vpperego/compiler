@@ -50,7 +50,9 @@ enum TAC_TYPE{
   TAC_REAL,
   TAC_FUNCTION,
   TAC_VARIABLE,
-  TAC_EXPRESSION
+  TAC_EXPRESSION,
+  TAC_JMP,
+  TAC_LABEL
 };
 
 typedef struct struct_tac

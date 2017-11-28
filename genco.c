@@ -86,9 +86,18 @@ TAC * tacGenerator(AST * node){
   }
 }
 
-//TODO - define this functions
+TAC * makeIfThen(TAC * code0, TAC * code1){
+  TAC * newJumpTac = 0;
+  TAC * newLabelTac = 0;
+  HASH_NODE * newLabel = makeLabel() ;
+  newJumpTac =tacCreate(TAC_JMP,newLabel,0,0);
+  newLabelTac = tacCreate(TAC_LABEL,newLabel,0,0);
+  return NULL;
+}
+
+
 TAC* tacGenerateOp(int type, TAC* op1, TAC* op2) {
-    // return tacJoin(op1,
-                // tacJoin(op2, tacCreate(type, makeTemp(), op1?op1->res:0, op2?op2->res:0)));
+    return tacJoin(op1,
+                tacJoin(op2, tacCreate(type, makeTemp(), op1?op1->res:0, op2?op2->res:0)));
     return NULL;
 }

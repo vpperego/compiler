@@ -15,6 +15,7 @@
 #define SYMBOL_ARG_ID 11
 #define SYMBOL_SCALAR 12
 #define SYMBOL_UNDEF 13
+#define SYMBOL_LABEL 14
 /*
 * Filipe Joner
 * Vinícius Pittigliani Perego
@@ -37,4 +38,6 @@ HASH_NODE * hashInsert(int type, char *text);
 void hashPrint();
 void hashCheckUndeclared();
 HASH_NODE * getHashByDatatype(char *text,int datatype);
+HASH_NODE * makeTemp(void);
+HASH_NODE * makeLabel(void);
 #endif

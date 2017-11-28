@@ -85,3 +85,18 @@ void hashCheckUndeclared(){
       }
   }
 }
+
+
+HASH_NODE * makeTemp(void){
+  static int factorySerialNumber = 0;
+  char  nameBuffer[256];
+  sprintf(nameBuffer,"myOwnvarPrefix%d",factorySerialNumber++);
+  return hashInsert(SYMBOL_VAR,nameBuffer);
+}
+
+HASH_NODE * makeLabel(void){
+  static int factorySerialNumber = 0;
+  char  nameBuffer[256];
+  sprintf(nameBuffer,"LabEl%d",factorySerialNumber++);
+  return hashInsert(SYMBOL_LABEL,nameBuffer);
+}
