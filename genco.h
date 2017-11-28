@@ -52,7 +52,8 @@ enum TAC_TYPE{
   TAC_VARIABLE,
   TAC_EXPRESSION
 };
-typedef struct_tac
+
+typedef struct struct_tac
 {
   int type;
   HASH_NODE * res;

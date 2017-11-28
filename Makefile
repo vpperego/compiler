@@ -1,14 +1,16 @@
  # Filipe Joner
  # Vinícius Pittigliani Perego
 
-all: etapa4
+all: etapa5
 
-etapa4: y.tab.o lex.yy.o main.o hash.o astree.o semantic.o
-	gcc -o etapa4 lex.yy.o y.tab.o hash.o main.o astree.o semantic.o types.o
+etapa5: y.tab.o lex.yy.o main.o hash.o astree.o semantic.o genco.o
+	gcc -o etapa5 lex.yy.o y.tab.o hash.o main.o astree.o semantic.o types.o genco.o
 main.o: main.c
 	gcc -c main.c
 semantic.o: types.o semantic.c
 	gcc -c semantic.c
+genco.o: genco.c
+	gcc -c genco.c
 types.o: types.c
 	gcc -c types.c
 hash.o: hash.c
@@ -24,4 +26,4 @@ y.tab.o: y.tab.h
 y.tab.h: parser.y
 	yacc -d parser.y
 clean:
-	rm -f *.o lex.yy.* y.tab.* etapa4
+	rm -f *.o lex.yy.* y.tab.* etapa5

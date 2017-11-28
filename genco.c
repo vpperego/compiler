@@ -27,8 +27,8 @@ TAC * tacJoin(TAC *l1, TAC *l2){
 
 void tacPrintSingle(TAC *tac){
   if (!tac) return;
-  fprintf(stderr, "TAC(", );
-  switch (tac->type;) {
+  fprintf(stderr, "TAC(" );
+  switch (tac->type) {
     case TAC_SYMBOL:  fprintf(stderr,"TAC_SYMBOL"); break;
     case TAC_ADD:  fprintf(stderr,"TAC_ADD"); break;
     case TAC_MUL:  fprintf(stderr,"TAC_MUL"); break;
@@ -36,9 +36,9 @@ void tacPrintSingle(TAC *tac){
     default: break;
   }
 
-  if(tac->res) fprintf(stderr, "%s\n",tac->res->text ) else fprintf(stderr, ", null" );
-  if(tac->op1) fprintf(stderr, "%s\n",tac->op1->text ) else fprintf(stderr, ", null" );
-  if(tac->op2) fprintf(stderr, "%s\n",tac->op2->text ) else fprintf(stderr, ", null" );
+  if(tac->res) fprintf(stderr, "%s\n",tac->res->text ); else fprintf(stderr, ", null" );
+  if(tac->op1) fprintf(stderr, "%s\n",tac->op1->text ); else fprintf(stderr, ", null" );
+  if(tac->op2) fprintf(stderr, "%s\n",tac->op2->text ); else fprintf(stderr, ", null" );
 }
 
 void tacPrintBack(TAC * last){
@@ -86,8 +86,9 @@ TAC * tacGenerator(AST * node){
   }
 }
 
-
+//TODO - define this functions
 TAC* tacGenerateOp(int type, TAC* op1, TAC* op2) {
-    return tacJoin(op1,
-                tacJoin(op2, tacCreate(type, makeTemp(), op1?op1->res:0, op2?op2->res:0)));
+    // return tacJoin(op1,
+                // tacJoin(op2, tacCreate(type, makeTemp(), op1?op1->res:0, op2?op2->res:0)));
+    return NULL;
 }
