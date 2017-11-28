@@ -256,16 +256,19 @@ void semanticCheckOperands(AST *node){
 	}
 
 	if (node->type == AST_AND || node->type == AST_OR || node->type == AST_NOT){
+    if(node->son[0]){
+  		if(checkArithmeticType(node->son[0]->type)){
 
-		if(checkArithmeticType(node->son[0]->type)){
-
-			  fprintf(stderr, "SEMANTIC ERROR: cannot have left arithmetic operand. \n");
-			  exitCode = 4;
-		}
-		if(checkArithmeticType(node->son[1]->type)){
-			  fprintf(stderr, "SEMANTIC ERROR: cannot have right arithmeic operand. \n");
-			  exitCode = 4;
-		}
+  			  fprintf(stderr, "SEMANTIC ERROR: cannot have left arithmetic operand. \n");
+  			  exitCode = 4;
+  		}
+    }
+    if(node->son[1]){
+  		if(checkArithmeticType(node->son[1]->type)){
+  			  fprintf(stderr, "SEMANTIC ERROR: cannot have right arithmeic operand. \n");
+  			  exitCode = 4;
+  		}
+    }
 	}
 
 	for (i=0; i<MAX_SONS; ++i)
@@ -275,7 +278,6 @@ void semanticCheckOperands(AST *node){
 void semanticCheckUndeclared(){
   hashCheckUndeclared();
 }
-
 
 
 void checkParams(AST* node, AST * parameters){
