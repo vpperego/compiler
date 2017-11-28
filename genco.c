@@ -82,6 +82,7 @@ TAC * tacGenerator(AST * node){
     case AST_CHAR:  return tacCreate(TAC_CHAR, 0, 0, 0); break;
     case AST_INTEGER: return tacCreate(TAC_INTEGER, 0, 0, 0); break;
     case AST_REAL:  return tacCreate(TAC_REAL, 0, 0, 0); break;
+    case AST_START: return; //Fill with necessary return for program
     default: break;
   }
 }
