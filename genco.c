@@ -1,5 +1,6 @@
 #include "genco.h"
 
+TAC* makeFuncDec(TAC* type, TAC* params, TAC* cmdBlock, HASH_NODE *symbol);
 TAC* makeIfThen(TAC* code0, TAC* code1);
 TAC* makeIfThenElse(TAC* code0, TAC* code1, TAC* code2);
 TAC* makeWhile(TAC* code0, TAC* code1);
@@ -91,7 +92,7 @@ TAC * tacGenerator(AST * node){
     case AST_ATRIB_ARRAY: break;
     case AST_READ: return tacCreate(TAC_READ, node->symbol, 0, 0); break;
     case AST_PRINT: break;
-    case AST_RETURN: return tacJoin(code[0], tacCreate(TAC_RET, node->symbol, code[0]?code[0]->res:0, 0)); break
+    case AST_RETURN: return tacJoin(code[0], tacCreate(TAC_RETURN, node->symbol, code[0]?code[0]->res:0, 0)); break;
     case AST_IF: return makeIfThen(code[0], code[1]); break;
     case AST_IF_ELSE: return makeIfThenElse(code[0], code[1], code[2]); break;
     case AST_WHILE: return makeWhile(code[0], code[1]); break;
@@ -143,7 +144,7 @@ TAC* makeIfThenElse(TAC* code0, TAC* code1, TAC* code2) {
   newlabel2 = makeLabel();
   iftac = tacCreate(TAC_IFZ, newlabel,code0?code0->res:0,0);
   labeltac = tacCreate(TAC_LABEL, newlabel, 0,0);
-  jumptac = tacCreate(TAC_JUMP, newlabel2, 0, 0);
+  jumptac = tacCreate(TAC_JMP, newlabel2, 0, 0);
   labeltac2 = tacCreate(TAC_LABEL, newlabel2, 0,0);
   return tacJoin(tacJoin(tacJoin(tacJoin(tacJoin(tacJoin(code0,iftac),code1),jumptac),labeltac),code2),labeltac2);
 }
@@ -155,7 +156,7 @@ TAC* makeWhile(TAC* code0, TAC* code1) {
   newlabel2 = makeLabel();
   iftac = tacCreate(TAC_IFZ, newlabel,code0?code0->res:0,0);
   labeltac = tacCreate(TAC_LABEL, newlabel, 0,0);
-  jumptac = tacCreate(TAC_JUMP, newlabel2, 0, 0);
+  jumptac = tacCreate(TAC_JMP, newlabel2, 0, 0);
   labeltac2 = tacCreate(TAC_LABEL, newlabel2, 0,0);
   return tacJoin(tacJoin(tacJoin(tacJoin(tacJoin(labeltac2,code0),iftac),code1),jumptac),labeltac);
 }
@@ -166,4 +167,3 @@ TAC* makeFuncDec(TAC* type, TAC* params, TAC* cmdBlock, HASH_NODE *symbol) {
 
   return tacJoin(tacJoin(tacJoin(tacJoin(type,params),beginf), cmdBlock), endf);
 }
-
