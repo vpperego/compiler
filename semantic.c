@@ -247,7 +247,7 @@ void semanticCheckOperands(AST *node){
 		}
 
     if (node->type != AST_DIV) {
-  //    node->symbol->dataType = getArithmeticType(node->son[0]->symbol->dataType, node->son[1]->symbol->dataType); TODO -ISSO NAO VAI SER FEITO AQUI
+     node->symbol->dataType = getArithmeticType(node->son[0]->symbol->dataType, node->son[1]->symbol->dataType);
     } else {
        // TODO: divisão gera sempre float/double ou qualquer coisa?
        node->symbol->dataType = DATATYPE_DOUBLE;
