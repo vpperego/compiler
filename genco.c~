@@ -148,7 +148,7 @@ TAC * tacGenerator(AST * node){
 
 
 TAC* tacGenerateNot(int type, TAC* op1){
-    return tacJoin(op1, tacCreate(type, makeTemp(), op1?op1->res:0, 0));
+    return tacJoin(code[0], tacCreate(type, makeTemp(), code[0]?code[0]->res:0, 0));
 }
 
 

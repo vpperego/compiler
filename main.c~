@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 	yyparse();
 
 	// AST *tree = getAst();
-	tacPrintBack(tacStart);
+tacPrintBack(tacStart);
 //	hashPrint();
 	exit(exitCode);
     return 0;
