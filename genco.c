@@ -5,7 +5,7 @@ TAC* makeIfThen(TAC* code0, TAC* code1);
 TAC* makeIfThenElse(TAC* code0, TAC* code1, TAC* code2);
 TAC* makeWhile(TAC* code0, TAC* code1);
 TAC* makeFuncDef(TAC* type, TAC* params, TAC* cmdBlock, HASH_NODE *symbol);
-TAC* tacGenerateNot(int type, TAC* op1, TAC* op2);
+TAC* tacGenerateNot(int type, TAC* op1);
 TAC* tacGenerateOp(int type, TAC* op1, TAC* op2);
 
 TAC * tacCreate(int type, HASH_NODE * res, HASH_NODE * op1, HASH_NODE * op2){
@@ -82,27 +82,26 @@ TAC * tacGenerator(AST * node){
     case AST_NE:   return tacGenerateOp(TAC_NE, code[0], code[1]); break;
     case AST_AND:  return tacGenerateOp(TAC_AND, code[0], code[1]); break;
     case AST_OR:   return tacGenerateOp(TAC_OR, code[0], code[1]); break;
-    case AST_NOT:  return tacGenerateNot(TAC_NOT, code[0], code[1]); break;
+    case AST_NOT:  return tacGenerateNot(TAC_NOT, code[0]); break;
     case AST_PARENTHESES: break;
-    case AST_FUNC: break;
+    case AST_FUNC: return tacJoin(code[0], tacCreate(TAC_FUNC, makeTemp(), node->symbol, 0)); break;
     case AST_INIT_ARRAY: break;
     case AST_ARRAY_INIT_VALUES: break;
     case AST_ARRAY: break;
     case AST_ATRIB: return tacJoin(code[0], tacCreate(TAC_MOVE, node->symbol, code[0]?code[0]->res:0, 0)); break;
     case AST_ATRIB_ARRAY: break;
     case AST_READ: return tacCreate(TAC_READ, node->symbol, 0, 0); break;
-    case AST_PRINT: break;
+    case AST_PRINT: return tacJoin(code[0], tacCreate(TAC_PRINT, 0,0,0)); break;
     case AST_RETURN: return tacJoin(code[0], tacCreate(TAC_RETURN, node->symbol, code[0]?code[0]->res:0, 0)); break;
     case AST_IF: return makeIfThen(code[0], code[1]); break;
     case AST_IF_ELSE: return makeIfThenElse(code[0], code[1], code[2]); break;
     case AST_WHILE: return makeWhile(code[0], code[1]); break;
-    case AST_BLOCK: break;
-    case AST_LIST_PARAM: break;
-    case AST_PARAM: break;
-    case AST_ARG_ID: break;
+    case AST_BLOCK: return code[0]; break;
+    case AST_LIST_PARAM: return tacJoin(tacJoin(code[0], tacCreate(TAC_LIST_PARAM, code[0]? code[0]->res : 0, 0, 0)), code[1]); break;
+    case AST_PARAM: return tacCreate(TAC_PARAM, node->symbol, 0, 0); break;
+    case AST_ARG_ID: return tacJoin(code[0],tacCreate(TAC_ARG_ID, node->symbol, 0, 0)); break;
     case AST_LIST_ARG: break;
     case AST_ARG: break;
-    case AST_START: break;
     case AST_VARDEC: break;
     case AST_FUNDEC: return makeFuncDec(code[0],code[1],code[2],node->symbol); break;
     case AST_LIST_CMD: break;
@@ -110,16 +109,19 @@ TAC * tacGenerator(AST * node){
     case AST_FUNCTION: break;
     case AST_VARIABLE: break;
     case AST_EXPRESSION: break;
-    default: break;
+    case AST_START: break;
+    default: 
+      printf("Default case %d\n", node->type);
+      return tacJoin(tacJoin(tacJoin(code[0],code[1]),code[2]),code[3]);
+      break;
   }
 }
 
 
 
 
-TAC* tacGenerateNot(int type, TAC* op1, TAC* op2){
-    return tacJoin(tacJoin(code[0], code[1]),
-                tacCreate(type, makeTemp(), code[0]?code[0]->res:0, code[1]?code[1]->res:0));
+TAC* tacGenerateNot(int type, TAC* op1){
+    return tacJoin(code[0], tacCreate(type, makeTemp(), code[0]?code[0]->res:0, 0));
 }
 
 
