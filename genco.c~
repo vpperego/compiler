@@ -61,7 +61,7 @@ void tacPrintSingle(TAC *tac){
   if (!tac) {
     return;
   }
-  TAC* tacPrint;
+  TAC* tacPrint = tac;
   
   fprintf(stderr, "TAC(" );
   switch (tacPrint->type) {
@@ -167,6 +167,9 @@ TAC* tacGenerator(AST * node){
     case AST_ARG: break;
     case AST_VARDEC: return tacJoin(code[0], tacCreate(TAC_MOVE, node->symbol, node->son[1]->symbol, 0)); break;
     case AST_FUNDEC: return makeFuncDec(code[0],code[1],code[2],node->symbol); break;
+		case AST_INTEGER: return tacCreate(TAC_INTEGER, node->symbol, 0, 0);break;
+		case AST_REAL: return tacCreate(TAC_INTEGER, node->symbol, 0, 0);break;
+		case AST_CHAR: return tacCreate(TAC_INTEGER, node->symbol, 0, 0);break;
     default: 
        return tacJoin(tacJoin(tacJoin(code[0],code[1]),code[2]),code[3]);
       break;
@@ -182,8 +185,10 @@ TAC* tacGenerateNot(int type, TAC* op1){
 
 
 TAC* tacGenerateOp(int type, TAC* op1, TAC* op2){
-    return tacJoin(op1,
-                tacJoin(op2, tacCreate(type, makeTemp(), op1?op1->res:0, op2?op2->res:0)));
+    return tacJoin(tacJoin(op1,op2),
+									 tacCreate(type, makeTemp(), op1?op1->res:0, op2?op2->res:0));
+//op1,
+  //              tacJoin(op2, tacCreate(type, makeTemp(), op1?op1->res:0, op2?op2->res:0)));
 }
 
 
