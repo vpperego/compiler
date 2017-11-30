@@ -53,6 +53,7 @@ enum TAC_TYPE{
   TAC_JMP,
   TAC_IFZ,
   TAC_MOVE,
+  TAC_MOV_IND,
   TAC_LABEL
 };
 
