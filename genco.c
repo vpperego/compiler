@@ -61,7 +61,7 @@ void tacPrintSingle(TAC *tac){
   if (!tac) {
     return;
   }
-  TAC* tacPrint;
+  TAC* tacPrint = tac;
   
   fprintf(stderr, "TAC(" );
   switch (tacPrint->type) {
@@ -116,7 +116,7 @@ void tacPrintSingle(TAC *tac){
 void tacPrintBack(TAC * last){
   TAC * tac;
   for ( tac = last; tac; tac = tac->prev) {
-     tacPrintBack(tac);
+     tacPrintSingle(tac);
   }
 }
 

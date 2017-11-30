@@ -86,7 +86,8 @@
 program : listdecl      {root = $1;
                         //astPrint(root,0);
                         //  checkSemantics(root);
-                        tacPrintSingle(tacReverse(tacGenerator(root)));
+												tacStart = tacGenerator(root);
+                        // tacPrintSingle(tacReverse(tacGenerator(root)));
 						}
     ;
 
