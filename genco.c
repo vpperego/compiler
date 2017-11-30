@@ -104,9 +104,9 @@ void tacPrintSingle(TAC *tac){
     default: fprintf(stderr, "TAC_UNKNOWN "); break;
   }
 
-  if(tacPrint->res) fprintf(stderr, "%s\n",tacPrint->res->text ); else fprintf(stderr, ", null" );
-  if(tacPrint->op1) fprintf(stderr, "%s\n",tacPrint->op1->text ); else fprintf(stderr, ", null" );
-  if(tacPrint->op2) fprintf(stderr, "%s\n",tacPrint->op2->text ); else fprintf(stderr, ", null" );
+  if(tacPrint->res && tacPrint->res->text ) fprintf(stderr, "%s\n",tacPrint->res->text ); else fprintf(stderr, ", null" );
+  if(tacPrint->op1 && tacPrint->op1->text) fprintf(stderr, "%s\n",tacPrint->op1->text ); else fprintf(stderr, ", null" );
+  if(tacPrint->op2 && tacPrint->op2->text) fprintf(stderr, "%s\n",tacPrint->op2->text ); else fprintf(stderr, ", null" );
   fprintf(stderr, ")\n");
   
 }
@@ -129,8 +129,7 @@ TAC* tacGenerator(AST * node){
   for (i = 0; i < MAX_SONS; i++) {
     code[i] = tacGenerator(node->son[i]);
   }
-
-	fprintf(stderr,"node->type = %d\n",node->type);
+ 
   //TAC * tacCreate(int type, HASH_NODE * res, HASH_NODE * op1, HASH_NODE * op2) Just to remind the order of parameters
   switch (node->type) {
     case AST_SYMBOL: return tacCreate(TAC_SYMBOL, node->symbol, 0, 0); break;
@@ -156,15 +155,15 @@ TAC* tacGenerator(AST * node){
           tacCreate(TAC_MOV_IND,node->symbol,code[0]?code[0]->res:0,code[1]?code[1]->res:0)); break;
     case AST_READ: return tacCreate(TAC_READ, node->symbol, 0, 0); break;
     case AST_PRINT: return tacJoin(code[0], tacCreate(TAC_PRINT, 0,0,0)); break;
-    case AST_RETURN: return tacJoin(code[0], tacCreate(TAC_RETURN, node->symbol, code[0]?code[0]->res:0, 0)); break;
+    case AST_RETURN: return tacJoin(code[0], tacCreate(TAC_RETURN, node->symbol, 0, 0)); break;
     case AST_IF: return makeIfThen(code[0], code[1]); break;
     case AST_IF_ELSE: return makeIfThenElse(code[0], code[1], code[2]); break;
     case AST_WHILE: return makeWhile(code[0], code[1]); break;
-    case AST_LIST_PARAM: return tacJoin(tacJoin(code[0], tacCreate(TAC_PARAM, code[0]? code[0]->res : 0, 0, 0)), code[1]); break;
-    case AST_PARAM: return tacCreate(TAC_PARAM, node->symbol, 0, 0); break;
-    case AST_ARG_ID: return tacJoin(code[0],tacCreate(TAC_ARG_ID, node->symbol, 0, 0)); break;
-    case AST_LIST_ARG: break;
-    case AST_ARG: break;
+  //  case AST_LIST_PARAM: return tacJoin(tacJoin(code[0], tacCreate(TAC_PARAM, code[0]? code[0]->res : 0, 0, 0)), code[1]); break;
+//    case AST_PARAM: return tacCreate(TAC_PARAM, code[0]->res, 0, 0); break;
+    case AST_ARG_ID: return tacCreate(TAC_ARG_ID, node->symbol, 0, 0); break;
+ //   case AST_LIST_ARG: break;
+    //case AST_ARG: break;
     case AST_VARDEC: return tacJoin(code[0], tacCreate(TAC_MOVE, node->symbol, code[1]->res, 0)); break;
     case AST_FUNDEC: return makeFuncDec(code[0],code[1],code[2],node->symbol); break;
 		case AST_INTEGER: return tacCreate(TAC_INTEGER, node->symbol, 0, 0);break;
