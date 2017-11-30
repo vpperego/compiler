@@ -1,19 +1,11 @@
 // UFRGS - Compiladores - Marcelo Johann - 2017/2
 
 a: short = 0;
-i: long = 0;
-v: long[10] 0 0 0 0 0 0 0 0 0 0;
-mat: long[10];
-f: float = 10.55;
-c: byte = 'x';
-d: byte = 65;
-
 
 (long) main()
   {
-  a = 10;
-  v[7] = v[incn(1,2)];
+  a = 10 + 1;
+
   }
 
-  (short) incn (x: long, n: long)
-    {return (x + n)}
+

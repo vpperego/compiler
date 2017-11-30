@@ -72,5 +72,7 @@ TAC * tacStart;
 TAC * tacCreate(int type, HASH_NODE * res, HASH_NODE * op1, HASH_NODE * op2);
 TAC * tacGenerator(AST * node);
 TAC * tacJoin(TAC *l1, TAC *l2);
-void tacPrintBack(TAC * last);
+void tacPrintFoward(TAC* first);
+void tacPrintSingle(TAC *tac);
+TAC* tacReverse(TAC* tac);
 TAC* tacGenerateOp(int type, TAC* op1, TAC* op2);

@@ -10,7 +10,7 @@
     #include "astree.h"
     #include "hash.h"
     #include "semantic.h"
-		#include "genco.h"
+	#include "genco.h"
 	int yylex();
 	int yyerror(char *message);
 	extern int getLineNumber();
@@ -84,10 +84,10 @@
 
 /* Exemplos tirados da aula do professor*/
 program : listdecl      {root = $1;
-                      //  astPrint(root,0);
-                        checkSemantics(root);
-												tacStart = tacGenerator(root);
-												}
+                        //astPrint(root,0);
+                        //  checkSemantics(root);
+                        tacPrintSingle(tacReverse(tacGenerator(root)));
+						}
     ;
 
 listdecl : decl listdecl  {$$ = astCreate(AST_START, 0, $1, $2, 0, 0);}
