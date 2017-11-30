@@ -130,7 +130,7 @@ TAC* tacGenerator(AST * node){
     code[i] = tacGenerator(node->son[i]);
   }
 
-
+	fprintf(stderr,"node->type = %d\n",node->type);
   //TAC * tacCreate(int type, HASH_NODE * res, HASH_NODE * op1, HASH_NODE * op2) Just to remind the order of parameters
   switch (node->type) {
     case AST_SYMBOL: return tacCreate(TAC_SYMBOL, node->symbol, 0, 0); break;
@@ -148,9 +148,9 @@ TAC* tacGenerator(AST * node){
     case AST_OR:   return tacGenerateOp(TAC_OR, code[0], code[1]); break;
     case AST_NOT:  return tacGenerateNot(TAC_NOT, code[0]); break;
     case AST_FUNC: return tacJoin(code[0], tacCreate(TAC_FUNC, makeTemp(), node->symbol, 0)); break;
-    case AST_INIT_ARRAY: break;
-    case AST_ARRAY_INIT_VALUES: break;
-    case AST_ARRAY: break;
+    case AST_INIT_ARRAY:  return tacJoin(code[2],tacCreate(TAC_INIT_ARRAY,node->symbol,code[1]?code[1]->res:0,0));
+//    case AST_ARRAY_INIT_VALUES: break;
+    case AST_ARRAY: return tacJoin(code[0],tacCreate(TAC_ARRAY, node->symbol, 0, 0)); break;
     case AST_ATRIB: return tacJoin(code[0], tacCreate(TAC_MOVE, node->symbol, code[0]?code[0]->res:0, 0)); break;
     case AST_ATRIB_ARRAY: return tacJoin(tacJoin(code[0],code[1]),
           tacCreate(TAC_MOV_IND,node->symbol,code[0]?code[0]->res:0,code[1]?code[1]->res:0)); break;
@@ -165,11 +165,11 @@ TAC* tacGenerator(AST * node){
     case AST_ARG_ID: return tacJoin(code[0],tacCreate(TAC_ARG_ID, node->symbol, 0, 0)); break;
     case AST_LIST_ARG: break;
     case AST_ARG: break;
-    case AST_VARDEC: return tacJoin(code[0], tacCreate(TAC_MOVE, node->symbol, node->son[1]->symbol, 0)); break;
+    case AST_VARDEC: return tacJoin(code[0], tacCreate(TAC_MOVE, node->symbol, code[1]->res, 0)); break;
     case AST_FUNDEC: return makeFuncDec(code[0],code[1],code[2],node->symbol); break;
 		case AST_INTEGER: return tacCreate(TAC_INTEGER, node->symbol, 0, 0);break;
-		case AST_REAL: return tacCreate(TAC_INTEGER, node->symbol, 0, 0);break;
-		case AST_CHAR: return tacCreate(TAC_INTEGER, node->symbol, 0, 0);break;
+		case AST_REAL: return tacCreate(TAC_REAL, node->symbol, 0, 0);break;
+		case AST_CHAR: return tacCreate(TAC_CHAR, node->symbol, 0, 0);break;
     default: 
        return tacJoin(tacJoin(tacJoin(code[0],code[1]),code[2]),code[3]);
       break;

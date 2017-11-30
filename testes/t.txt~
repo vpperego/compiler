@@ -1,10 +1,14 @@
 // UFRGS - Compiladores - Marcelo Johann - 2017/2
 
-a: short = 0;
-
+//a: short = 12;
+v: long[10] 0 0 0 0 0 0 0 0 0 0;
 (long) main()
   {
-  a = 10 + 1;
+//  a = 10 + 1;
+//	a = 10;
+ // v[2] = v[10-1];
+// if (a==11) then
+  //  ;
 
   }
 

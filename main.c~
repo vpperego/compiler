@@ -37,9 +37,9 @@ int main(int argc, char *argv[]) {
 
 	initMe();
 	yyparse();
-												fprintf(stderr,"vou printar inverso\n");
+
 	// AST *tree = getAst();
-	tacPrintBack(tacStart);
+	tacPrintBack(tacReverse(tacStart));
 //	hashPrint();
 	exit(exitCode);
     return 0;
