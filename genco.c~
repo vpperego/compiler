@@ -165,7 +165,7 @@ TAC* tacGenerator(AST * node){
     case AST_ARG_ID: return tacJoin(code[0],tacCreate(TAC_ARG_ID, node->symbol, 0, 0)); break;
     case AST_LIST_ARG: break;
     case AST_ARG: break;
-    case AST_VARDEC: return tacJoin(code[0], tacCreate(TAC_MOVE, node->symbol, node->son[1]->symbol, 0)); break;
+    case AST_VARDEC: return tacJoin(code[0], tacCreate(TAC_MOVE, node->symbol, code[1]? code[1]->res:0, 0)); break;
     case AST_FUNDEC: return makeFuncDec(code[0],code[1],code[2],node->symbol); break;
     default: 
        return tacJoin(tacJoin(tacJoin(code[0],code[1]),code[2]),code[3]);
