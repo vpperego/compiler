@@ -8,6 +8,8 @@ TAC* makeFuncDef(TAC* type, TAC* params, TAC* cmdBlock, HASH_NODE *symbol);
 TAC* tacGenerateNot(int type, TAC* op1);
 TAC* tacGenerateOp(int type, TAC* op1, TAC* op2);
 
+TAC* makeFunction(TAC* symbol, TAC* par, TAC* code);
+
 TAC * tacCreate(int type, HASH_NODE * res, HASH_NODE * op1, HASH_NODE * op2){
   TAC * newtac = (TAC *) calloc(1,sizeof(TAC));
   newtac->type = type;
@@ -165,7 +167,10 @@ TAC* tacGenerator(AST * node){
  //   case AST_LIST_ARG: break;
     //case AST_ARG: break;
     case AST_VARDEC: return tacJoin(code[0], tacCreate(TAC_MOVE, node->symbol, code[1]->res, 0)); break;
-    case AST_FUNDEC: return makeFuncDec(code[0],code[1],code[2],node->symbol); break;
+    case AST_FUNDEC: 
+      return  makeFunction(tacCreate(TAC_SYMBOL, node->symbol, 0, 0), code[1], code[2]);
+      //return makeFuncDec(code[0],code[1],code[2],node->symbol); 
+      break;
 		case AST_INTEGER: return tacCreate(TAC_INTEGER, node->symbol, 0, 0);break;
 		case AST_REAL: return tacCreate(TAC_REAL, node->symbol, 0, 0);break;
 		case AST_CHAR: return tacCreate(TAC_CHAR, node->symbol, 0, 0);break;
@@ -226,6 +231,10 @@ TAC* makeWhile(TAC* code0, TAC* code1) {
 TAC* makeFuncDec(TAC* type, TAC* params, TAC* cmdBlock, HASH_NODE *symbol) {
   TAC* beginf = tacCreate(TAC_BEGIN_FUN, symbol, 0, 0);
   TAC* endf = tacCreate(TAC_END_FUN, symbol, 0, 0);
-
   return tacJoin(tacJoin(tacJoin(tacJoin(type,params),beginf), cmdBlock), endf);
+}
+
+TAC* makeFunction(TAC* symbol, TAC* par, TAC* code)
+{
+	return tacJoin(tacJoin(tacJoin( tacCreate(TAC_BEGIN_FUN, symbol->res, 0, 0), par) , code ), tacCreate(TAC_END_FUN, symbol->res, 0, 0));
 }
