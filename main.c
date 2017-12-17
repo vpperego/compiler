@@ -27,7 +27,7 @@ int isRunning();
 int main(int argc, char *argv[]) {
 	int token;
 	if(argc<2){
-		fprintf(stderr,"Execute: ./etapa5 inputfile \n");
+		fprintf(stderr,"Execute: ./etapa6 inputfile \n");
 		return 1;
 	}
 	if(!(yyin = fopen(argv[1],"r"))){
@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 	yyparse();
 
 	// AST *tree = getAst();
-	tacPrintFoward(tacReverse(tacStart));
+	// tacPrintFoward(tacReverse(tacStart));
 //	hashPrint();
 	exit(exitCode);
     return 0;
