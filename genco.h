@@ -1,8 +1,10 @@
 #include "hash.h"
 #include "astree.h"
+#include <string.h>
 
 enum TAC_TYPE{
   TAC_SYMBOL,
+  TAC_STRING,
   TAC_ADD,
   TAC_SUB,
   TAC_MUL,
@@ -24,7 +26,9 @@ enum TAC_TYPE{
   TAC_ATRIB,
   TAC_ATRIB_ARRAY,
   TAC_READ,
-  TAC_PRINT,
+  // TAC_PRINT,
+  TAC_BEGIN_PRINT,
+  TAC_END_PRINT,
   TAC_RETURN,
   TAC_BLOCK,
   TAC_LIST_PARAM,

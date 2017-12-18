@@ -11,7 +11,7 @@
     #include "hash.h"
     #include "semantic.h"
     #include "genco.h"
- 
+
 	int yylex();
 	int yyerror(char *message);
 	extern int getLineNumber();
@@ -169,7 +169,7 @@ expr : expr '+' expr    {$$ = astCreate(AST_ADD,0,$1,$3,0,0);}
     | TK_IDENTIFIER '[' expr ']'   {$$ = astCreate(AST_ARRAY,$1,$3,0,0,0);}
     | TK_IDENTIFIER             {$$ = astCreate(AST_SYMBOL,$1,0,0,0,0);}
     | value                 {$$ = $1;}
-    | LIT_STRING            {$$ = astCreate(AST_SYMBOL,$1,0,0,0,0);}
+    | LIT_STRING            {$$ = astCreate(AST_STRING,$1,0,0,0,0);}
     ;
 
 listArgs : arg ',' listArgs {$$ = astCreate(AST_LIST_ARG,0,$1,$3,0,0);}

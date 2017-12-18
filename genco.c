@@ -88,7 +88,8 @@ void tacPrintSingle(TAC *tac){
     case TAC_ATRIB: fprintf(stderr, "TAC_ATRIB"); break;
     case TAC_ATRIB_ARRAY: fprintf(stderr, "TAC_ATRIB_ARRAY"); break;
     case TAC_READ: fprintf(stderr, "TAC_READ"); break;
-    case TAC_PRINT: fprintf(stderr, "TAC_PRINT"); break;
+    case TAC_BEGIN_PRINT: fprintf(stderr, "TAC_BEGIN_PRINT"); break;
+    case TAC_END_PRINT: fprintf(stderr, "TAC_END_PRINT"); break;
     case TAC_RETURN: fprintf(stderr, "TAC_RETURN"); break;
     case TAC_LIST_PARAM: fprintf(stderr, "TAC_LIST_PARAM"); break;
     case TAC_PARAM: fprintf(stderr, "TAC_PARAM"); break;
@@ -135,6 +136,7 @@ TAC* tacGenerator(AST * node){
   //TAC * tacCreate(int type, HASH_NODE * res, HASH_NODE * op1, HASH_NODE * op2) Just to remind the order of parameters
   switch (node->type) {
     case AST_SYMBOL: return tacCreate(TAC_SYMBOL, node->symbol, 0, 0); break;
+    case AST_STRING: return tacCreate(TAC_STRING, node->symbol, 0, 0); break;
     case AST_ADD:  return tacGenerateOp(TAC_ADD, code[0], code[1]); break;
     case AST_SUB:  return tacGenerateOp(TAC_SUB, code[0], code[1]); break;
     case AST_MUL:  return tacGenerateOp(TAC_MUL, code[0], code[1]); break;
@@ -156,7 +158,7 @@ TAC* tacGenerator(AST * node){
     case AST_ATRIB_ARRAY: return tacJoin(tacJoin(code[0],code[1]),
           tacCreate(TAC_MOV_IND,node->symbol,code[0]?code[0]->res:0,code[1]?code[1]->res:0)); break;
     case AST_READ: return tacCreate(TAC_READ, node->symbol, 0, 0); break;
-    case AST_PRINT: return tacJoin(code[0], tacCreate(TAC_PRINT, 0,0,0)); break;
+    case AST_PRINT: return tacJoin(tacJoin( tacCreate(TAC_BEGIN_PRINT, node->symbol, 0, 0), code[0] ), tacCreate(TAC_END_PRINT, node->symbol, makeTemp(), 0));break;
     case AST_RETURN: return tacJoin(code[0], tacCreate(TAC_RETURN, node->symbol, 0, 0)); break;
     case AST_IF: return makeIfThen(code[0], code[1]); break;
     case AST_IF_ELSE: return makeIfThenElse(code[0], code[1], code[2]); break;
@@ -239,10 +241,6 @@ TAC* makeFunction(TAC* symbol, TAC* par, TAC* code)
 	return tacJoin(tacJoin(tacJoin( tacCreate(TAC_BEGIN_FUN, symbol->res, 0, 0), par) , code ), tacCreate(TAC_END_FUN, symbol->res, 0, 0));
 }
 
-TAC* makePrint(TAC* symbol, TAC* par, TAC* code)
-{
-	return tacJoin(tacJoin(tacJoin( tacCreate(TAC_BEGIN_PRINT, symbol->res, 0, 0), par) , code ), tacCreate(TAC_END_PRINT, symbol->res, makeTemp(), 0));
-}
 
 // .globl	FUN_NAME
 // 			.type	FUN_NAME, @function
@@ -267,41 +265,51 @@ void writeCode(TAC *code, FILE * assemblyCode){
       code->res->text,code->res->text );
     }else if(code->type == TAC_RETURN){
       fprintf(assemblyCode, "\nret");
-    }else if (code->type == TAC_PRINT){
-      fprintf(assemblyCode, "\nmovl	%s(%%rip), %%ecx\nmovl	$0, %eax\ncall	printf",code->res->text);
+    }else if (code->type == TAC_END_PRINT){
+      fprintf(assemblyCode, "\nmovl	$.%s, %%edi\nmovl	$0, %%eax\ncall	printf",code->op1->text);
     }else if(code->type == TAC_SYMBOL){
-      fprintf(assemblyCode,"\nmovl	%s(%%rip), %%eax",code->symbol->text);//TODO cuidar o gerenciamento de registradores
+
+      fprintf(assemblyCode,"\nmovl	%s(%%rip), %%eax",code->res->text);//TODO cuidar o gerenciamento de registradores
     }
     writeCode(code->next, assemblyCode);
 
 }
+TAC * writePrint(TAC*code, FILE *assemblyCode){
+  char *printString = calloc(1000,sizeof(char)); //a string do print
 
-void generateTextArea(TAC *code,assemblyCode){
+  while(code->type != TAC_END_PRINT){
+    if(code->type == TAC_STRING){
+      //precisa remover as aspas da string
+      code->res->text[strlen(code->res->text)-1] = '\0'; //isso aqui ta certo, remove a ultima aspa
+      code->res->text[0] = ' '; //isso aqui ta errado pq tira a aspa e bota um espaco no lugar
+      strcat(printString,code->res->text);
+    }else{
+      strcat(printString,"%d");
+    }
+    // fprintf(assemblyCode, "\nmovl	%s(%%rip), %%ecx",code->res->text);
+    code = code->next;
+  }
+  fprintf(assemblyCode, "\n.%s:\n.string \"%s\"",code->op1->text,printString);
+  return code;
+}
+
+void generateTextArea(TAC *code,FILE *assemblyCode){
+  if(!code) return;
   if(code->type == TAC_MOVE){
       fprintf(assemblyCode, "\n.globl %s\n.data\n.align 4\n.type %s, @object\n.size %s, 4\n%s:\n.long %d",code->res->text,
         code->res->text,code->res->text,code->res->text,atoi(code->op1->text));
-    }else if(code->type == TAC_BEGIN_PRINT){
-      code = writePrint(code);
-    }
-    generateTextArea(code,assemblyCode);
+  }else if(code->type == TAC_BEGIN_PRINT){
+    code = writePrint(code->next,assemblyCode);
+  }
+  generateTextArea(code->next,assemblyCode);
 }
 
 void generateAssembly(TAC * code){
   FILE * assemblyCode = fopen("a.s","w");
-  generateTextArea(code,assemblyCode);
-
+   generateTextArea(code,assemblyCode);
+   fprintf(assemblyCode, "\n.text" );
   writeCode(code,assemblyCode);
   fclose(assemblyCode);
 }
 
-TAC * writePrint(TAC*code, FILE *assemblyCode){
-  char printString[1000]; //TODO - arrumar a gambiarra
-
-  while(code->type != TAC_END_PRINT){
-    fprintf(assemblyCode, "\nmovl	%s(%%rip), %%ecx",code->res->text);
-    strcat(printString,code->res->text);
-    code = code->next;
-  }
-  fprintf(assemblyCode, "\n%s:\n.string \"%s\"",code->op1->text,printString);
-  return code;
-}
+//

@@ -1,7 +1,5 @@
-d: byte = 65;
-
 (long) main()
   {
-  print "Incrementado algumas vezes fica ",a,"\n";
-  "Incrementado algumas vezes fica %d\n"
+    print "Ola mundo\nFINALMENTE FUNCIONA CARAI";
+  //"Incrementado algumas vezes fica %d\n"
   }

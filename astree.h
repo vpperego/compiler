@@ -9,6 +9,7 @@
 
 enum AST_TYPE{
   AST_SYMBOL,
+  AST_STRING,
   AST_ADD,
   AST_SUB,
   AST_MUL,
