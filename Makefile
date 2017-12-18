@@ -3,8 +3,8 @@
 
 all: etapa6
 
-etapa6: y.tab.o lex.yy.o main.o hash.o astree.o semantic.o genco.o assembly.o
-	gcc -o etapa6 lex.yy.o y.tab.o hash.o main.o astree.o semantic.o types.o genco.o assembly.o
+etapa6: y.tab.o lex.yy.o main.o hash.o astree.o semantic.o genco.o
+	gcc -o etapa6 lex.yy.o y.tab.o hash.o main.o astree.o semantic.o types.o genco.o  
 main.o: main.c
 	gcc -c main.c
 assembly.o: assembly.c

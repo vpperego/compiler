@@ -10,7 +10,8 @@
     #include "astree.h"
     #include "hash.h"
     #include "semantic.h"
-	#include "genco.h"
+    #include "genco.h"
+ 
 	int yylex();
 	int yyerror(char *message);
 	extern int getLineNumber();

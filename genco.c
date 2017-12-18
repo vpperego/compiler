@@ -167,9 +167,9 @@ TAC* tacGenerator(AST * node){
  //   case AST_LIST_ARG: break;
     //case AST_ARG: break;
     case AST_VARDEC: return tacJoin(code[0], tacCreate(TAC_MOVE, node->symbol, code[1]->res, 0)); break;
-    case AST_FUNDEC: 
+    case AST_FUNDEC:
       return  makeFunction(tacCreate(TAC_SYMBOL, node->symbol, 0, 0), code[1], code[2]);
-      //return makeFuncDec(code[0],code[1],code[2],node->symbol); 
+      //return makeFuncDec(code[0],code[1],code[2],node->symbol);
       break;
 		case AST_INTEGER: return tacCreate(TAC_INTEGER, node->symbol, 0, 0);break;
 		case AST_REAL: return tacCreate(TAC_REAL, node->symbol, 0, 0);break;
@@ -237,4 +237,71 @@ TAC* makeFuncDec(TAC* type, TAC* params, TAC* cmdBlock, HASH_NODE *symbol) {
 TAC* makeFunction(TAC* symbol, TAC* par, TAC* code)
 {
 	return tacJoin(tacJoin(tacJoin( tacCreate(TAC_BEGIN_FUN, symbol->res, 0, 0), par) , code ), tacCreate(TAC_END_FUN, symbol->res, 0, 0));
+}
+
+TAC* makePrint(TAC* symbol, TAC* par, TAC* code)
+{
+	return tacJoin(tacJoin(tacJoin( tacCreate(TAC_BEGIN_PRINT, symbol->res, 0, 0), par) , code ), tacCreate(TAC_END_PRINT, symbol->res, makeTemp(), 0));
+}
+
+// .globl	FUN_NAME
+// 			.type	FUN_NAME, @function
+// 		FUN_NAME:
+// 		.LFB1:
+// 			.cfi_startproc
+// 			pushq	%rbp\n.cfi_def_cfa_offset 16\n.cfi_offset 6, -16\nmovq	%rsp, %rbp\n.cfi_def_cfa_register 6\n
+//
+//       movl	$RET, %eax
+// 			popq	%rbp\n.cfi_def_cfa 7, 8\nret\n.cfi_endproc\n.LFE1:\n.size	FUN_NAME, .-FUN_NAME
+/*
+  TODO - .LFB1 e .LFE1 precisam ser incrementados para suportar diversas funcoes
+*/
+void writeCode(TAC *code, FILE * assemblyCode){
+  if(!code) return;
+
+   if(code->type == TAC_BEGIN_FUN){
+      fprintf(assemblyCode, "\n.globl %s\n.type %s, @function\n%s:\n.LFB1:\n.cfi_startproc\npushq	%%rbp\n.cfi_def_cfa_offset 16\n.cfi_offset 6, -16\nmovq	%%rsp, %%rbp\n.cfi_def_cfa_register 6\n",
+      code->res->text,code->res->text,code->res->text);
+    }else if(code->type == TAC_END_FUN){
+      fprintf(assemblyCode, "\npopq	%%rbp\n.cfi_def_cfa 7, 8\nret\n.cfi_endproc\n.LFE1:\n.size	%s, .-%s\n",
+      code->res->text,code->res->text );
+    }else if(code->type == TAC_RETURN){
+      fprintf(assemblyCode, "\nret");
+    }else if (code->type == TAC_PRINT){
+      fprintf(assemblyCode, "\nmovl	%s(%%rip), %%ecx\nmovl	$0, %eax\ncall	printf",code->res->text);
+    }else if(code->type == TAC_SYMBOL){
+      fprintf(assemblyCode,"\nmovl	%s(%%rip), %%eax",code->symbol->text);//TODO cuidar o gerenciamento de registradores
+    }
+    writeCode(code->next, assemblyCode);
+
+}
+
+void generateTextArea(TAC *code,assemblyCode){
+  if(code->type == TAC_MOVE){
+      fprintf(assemblyCode, "\n.globl %s\n.data\n.align 4\n.type %s, @object\n.size %s, 4\n%s:\n.long %d",code->res->text,
+        code->res->text,code->res->text,code->res->text,atoi(code->op1->text));
+    }else if(code->type == TAC_BEGIN_PRINT){
+      code = writePrint(code);
+    }
+    generateTextArea(code,assemblyCode);
+}
+
+void generateAssembly(TAC * code){
+  FILE * assemblyCode = fopen("a.s","w");
+  generateTextArea(code,assemblyCode);
+
+  writeCode(code,assemblyCode);
+  fclose(assemblyCode);
+}
+
+TAC * writePrint(TAC*code, FILE *assemblyCode){
+  char printString[1000]; //TODO - arrumar a gambiarra
+
+  while(code->type != TAC_END_PRINT){
+    fprintf(assemblyCode, "\nmovl	%s(%%rip), %%ecx",code->res->text);
+    strcat(printString,code->res->text);
+    code = code->next;
+  }
+  fprintf(assemblyCode, "\n%s:\n.string \"%s\"",code->op1->text,printString);
+  return code;
 }
