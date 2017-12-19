@@ -460,3 +460,110 @@ void astPrintSrc(AST* node, FILE *yyout) {
       break;
   }
 }
+
+
+void asmAddData(AST *node)
+{
+	
+	if(!node) return;
+	if(node->type == AST_VARDEC){
+    		asmAddVariable(node);
+	}
+	else if(node->type == AST_INIT_ARRAY){
+        	asmAddArray(node);
+	}
+    	else if(node->type == AST_SYMBOL){      		
+		asmAddPrint(node);
+    	}
+    	else if(node->type == AST_PARAM){
+        	asmAddParam(node);
+    	}
+    
+	int i;
+	for(i = 0; i < MAX_SONS; i++){
+		asmAddData(node->son[i]);
+	}
+}
+
+
+void asmAddVariable(AST* var)
+{
+	FILE *fout = fopen("asm.s", "a");
+	
+	if(!var) return;
+	if(var->type == AST_VARDEC)
+	{	
+		fprintf(fout, "\t.globl	_%s\n"
+			"\t.data\n"
+			"\t.type	_%s, @object\n"
+			"\t.size	_%s, 4\n"
+			"_%s:\n", var->symbol->text, var->symbol->text, var->symbol->text, var->symbol->text);
+		
+		if(var->son[0]->type == AST_FLOAT || var->son[0]->type == AST_DOUBLE){
+			fprintf(fout, "\t.float	%s\n", var->son[1]->symbol->text);
+		}
+		else{
+			fprintf(fout, "\t.long	%s\n", var->son[1]->symbol->text);
+		}
+	}
+	fclose(fout);
+}
+
+void asmAddParam(AST* var)
+{
+	FILE *fout = fopen("asm.s", "a");
+
+	if(var->type == AST_PARAM)
+	{		
+		fprintf(fout, "\t.globl	_%s\n"
+			"\t.data\n"
+			"\t.type	_%s, @object\n"
+			"\t.size	_%s, 4\n"
+			"_%s:\n"
+			"\t.long	0\n", var->symbol->text, var->symbol->text, var->symbol->text, var->symbol->text);
+	}
+
+	fclose(fout);
+}
+
+void asmAddArray(AST* arr)
+{
+	FILE *fout = fopen("asm.s", "a");
+
+	if(arr->type == AST_INIT_ARRAY)
+	{
+		fprintf(fout, "\t.globl	_%s\n"
+			"\t.data\n"
+			"\t.type	_%s, @object\n"
+			"\t.size	_%s, %d\n"
+			"_%s:\n", arr->symbol->text, arr->symbol->text, arr->symbol->text, 4*atoi(arr->son[1]->symbol->text), arr->symbol->text);
+			AST* aux;
+	for(aux = arr->son[1]->son[0]; aux; aux = aux->son[0])
+	{
+		fprintf(fout, "\t.long	%s\n", aux->symbol->text);
+	}
+	}
+
+	fclose(fout);
+}
+
+int numLC = 2;
+
+void asmAddPrint(AST* arr)
+{
+	FILE *fout = fopen("asm.s", "a");
+   
+     	char* lable = (char*) calloc(1, sizeof(char));
+	
+	if(arr->type == AST_SYMBOL && arr->symbol->type == 103)
+	{
+       
+	        if(arr->symbol)
+		{
+	        strcpy(lable, ".LC");
+	        fprintf(fout, "\t.section\t .rodata\n%s%d:\n\t.string %s \n", lable, numLC ,arr->symbol->text);
+            	numLC +=1;          
+        	}
+        	
+	}
+}

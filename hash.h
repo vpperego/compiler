@@ -16,6 +16,15 @@
 #define SYMBOL_SCALAR 12
 #define SYMBOL_UNDEF 13
 #define SYMBOL_LABEL 14
+#define SYMBOL_DATATYPE_BYTE 201
+#define SYMBOL_DATATYPE_SHORT 202
+#define SYMBOL_DATATYPE_LONG 203
+
+#define SYMBOL_DATATYPE_FLOAT 204
+#define SYMBOL_DATATYPE_DOUBLE 205
+
+#define SYMBOL_DATATYPE_BOOL 206
+#define SYMBOL_TEMP 207
 /*
 * Filipe Joner
 * Vinícius Pittigliani Perego
@@ -40,4 +49,7 @@ void hashCheckUndeclared();
 HASH_NODE * getHashByDatatype(char *text,int datatype);
 HASH_NODE * makeTemp(void);
 HASH_NODE * makeLabel(void);
+
+void asmAddTemp();
+void asmAddImm();
 #endif

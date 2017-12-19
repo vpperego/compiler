@@ -256,21 +256,62 @@ TAC* makeFunction(TAC* symbol, TAC* par, TAC* code)
 */
 void writeCode(TAC *code, FILE * assemblyCode){
   if(!code) return;
+  int LFBid, LFEid = 0;
 
    if(code->type == TAC_BEGIN_FUN){
-      fprintf(assemblyCode, "\n.globl %s\n.type %s, @function\n%s:\n.LFB1:\n.cfi_startproc\npushq	%%rbp\n.cfi_def_cfa_offset 16\n.cfi_offset 6, -16\nmovq	%%rsp, %%rbp\n.cfi_def_cfa_register 6\n",
-      code->res->text,code->res->text,code->res->text);
+    printf("Entrou begin");
+     fprintf(assemblyCode, "\n\t.globl %s\n"
+                           "\t.type %s, @function\n%s:\n.LFB%d:\n"
+                           "\t.cfi_startproc\n\tpushq	%%rbp\n"
+                           "\t.cfi_def_cfa_offset 16\n"
+                           "\t.cfi_offset 6, -16\n"
+                           "\tmovq	%%rsp, %%rbp\n"
+                           "\t.cfi_def_cfa_register 6\n",
+     code->res->text,code->res->text,code->res->text, LFBid);
+     LFBid++;
     }else if(code->type == TAC_END_FUN){
-      fprintf(assemblyCode, "\npopq	%%rbp\n.cfi_def_cfa 7, 8\nret\n.cfi_endproc\n.LFE1:\n.size	%s, .-%s\n",
-      code->res->text,code->res->text );
+      fprintf(assemblyCode, "\tpopq	%%rbp\n"
+                            "\t.cfi_def_cfa 7, 8\n"
+                            "\tret\n"
+                            "\t.cfi_endproc\n"
+                            ".LFE%d:\n"
+                            "\t.size	%s, .-%s\n",
+      LFEid, code->res->text,code->res->text );
+      LFEid++;
     }else if(code->type == TAC_RETURN){
-      fprintf(assemblyCode, "\nret");
+      fprintf(assemblyCode, "\tret\n");
     }else if (code->type == TAC_END_PRINT){
-      fprintf(assemblyCode, "\nmovl	$.%s, %%edi\nmovl	$0, %%eax\ncall	printf",code->op1->text);
-    }else if(code->type == TAC_SYMBOL){
-
-      fprintf(assemblyCode,"\nmovl	%s(%%rip), %%eax",code->res->text);//TODO cuidar o gerenciamento de registradores
+      fprintf(assemblyCode, "\tmovl	$.%s, %%edi\n"
+              "\tmovl	$0, %%eax\n"
+              "\tcall	printf\n",code->op1->text);
     }
+    else if(code->type == TAC_MOVE){
+      fprintf(assemblyCode, "\tmovl	_%s(%%rip), %%eax\n"
+      "\tnmovl	%%eax, _%s(%%rip)\n" , code->op1->text, code->res->text);
+    }
+    else if(code->type == TAC_ADD){
+      fprintf(assemblyCode,
+        "\t## TAC_ADD\n"
+        "\tmovl	_%s(%%rip), %%edx\n"
+        "\tmovl	_%s(%%rip), %%eax\n"
+        "\taddl	%%eax, %%edx\n"
+        "\tmovl	%%edx, _%s(%%rip)\n", code->op1->text,code->op2->text,code->res->text);
+    }
+    else if(code->type == TAC_SUB){
+      fprintf(assemblyCode, "\tmovl	_%s(%%rip), %%edx\n"
+      "\tmovl	_%s(%%rip), %%eax\n"
+      "\tsubl	%%eax, %%edx\n"
+      "\tmovl	%%edx, _%s(%%rip)\n", code->op1->text,code->op2->text,code->res->text);
+    }
+    else if(code->type == TAC_DIV){
+      fprintf(assemblyCode, "\tmovl	_%s(%%rip), %%eax\n"
+      "\tmovl	_%s(%%rip), %%ecx\n"
+      "\tcltd\n"
+      "\tidivl	%%ecx\n"
+      "\tmovl	%%eax, _%s(%%rip)\n", code->op1->text,code->op2->text,code->res->text); 
+    }
+
+
     writeCode(code->next, assemblyCode);
 
 }
@@ -295,19 +336,16 @@ TAC * writePrint(TAC*code, FILE *assemblyCode){
 
 void generateTextArea(TAC *code,FILE *assemblyCode){
   if(!code) return;
-  if(code->type == TAC_MOVE){
-      fprintf(assemblyCode, "\n.globl %s\n.data\n.align 4\n.type %s, @object\n.size %s, 4\n%s:\n.long %d",code->res->text,
-        code->res->text,code->res->text,code->res->text,atoi(code->op1->text));
-  }else if(code->type == TAC_BEGIN_PRINT){
+  if(code->type == TAC_BEGIN_PRINT){
     code = writePrint(code->next,assemblyCode);
   }
   generateTextArea(code->next,assemblyCode);
 }
 
 void generateAssembly(TAC * code){
-  FILE * assemblyCode = fopen("a.s","w");
-   generateTextArea(code,assemblyCode);
-   fprintf(assemblyCode, "\n.text" );
+  FILE * assemblyCode = fopen("asm.s","a");
+   //generateTextArea(code,assemblyCode);
+   //fprintf(assemblyCode, "\n.text" );
   writeCode(code,assemblyCode);
   fclose(assemblyCode);
 }

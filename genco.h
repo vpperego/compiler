@@ -81,3 +81,5 @@ void tacPrintSingle(TAC *tac);
 TAC* tacReverse(TAC* tac);
 TAC* tacGenerateOp(int type, TAC* op1, TAC* op2);
 void generateAssembly(TAC * code);
+
+void asmGen(TAC *first);

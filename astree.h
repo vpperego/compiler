@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "hash.h"
 #define MAX_SONS 4
 
@@ -70,5 +71,11 @@ typedef struct ast_node{
 AST * astCreate(int type, HASH_NODE *symbol,AST* son0, AST* son1, AST* son2, AST* son3);
 void astPrint (AST* node, int level);
 void astPrintSrc(AST* node, FILE *out);
+
+void asmAddVariable(AST* var);
+void asmAddArray(AST* arr);
+void asmAddData(AST *node);
+void asmAddPrint(AST* arr);
+void asmAddParam(AST* var);
 
 #endif

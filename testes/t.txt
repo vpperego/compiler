@@ -1,5 +1,9 @@
+a: long = 444;
+
+
 (long) main()
-  {
-    print "Ola mundo\nFINALMENTE FUNCIONA CARAI";
-  //"Incrementado algumas vezes fica %d\n"
-  }
+{
+  a = a + 100;
+  //print "",a;
+ //return a;
+}
