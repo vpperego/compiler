@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
 
 	// AST *tree = getAst();
 	// tacPrintFoward(tacReverse(tacStart));
-//	hashPrint();
+	//	hashPrint();
 	exit(exitCode);
     return 0;
 }

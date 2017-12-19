@@ -467,17 +467,17 @@ void asmAddData(AST *node)
 	
 	if(!node) return;
 	if(node->type == AST_VARDEC){
-    		asmAddVariable(node);
+  	asmAddVariable(node);
 	}
 	else if(node->type == AST_INIT_ARRAY){
-        	asmAddArray(node);
+   	asmAddArray(node);
 	}
-    	else if(node->type == AST_SYMBOL){      		
+  else if(node->type == AST_PARAM){      		
 		asmAddPrint(node);
-    	}
-    	else if(node->type == AST_PARAM){
-        	asmAddParam(node);
-    	}
+  }
+  else if(node->type == AST_ARG_ID){
+   	asmAddParam(node);
+  }
     
 	int i;
 	for(i = 0; i < MAX_SONS; i++){
@@ -513,7 +513,7 @@ void asmAddParam(AST* var)
 {
 	FILE *fout = fopen("asm.s", "a");
 
-	if(var->type == AST_PARAM)
+	if(var->type == AST_ARG_ID)
 	{		
 		fprintf(fout, "\t.globl	_%s\n"
 			"\t.data\n"
@@ -553,17 +553,15 @@ void asmAddPrint(AST* arr)
 {
 	FILE *fout = fopen("asm.s", "a");
    
-     	char* lable = (char*) calloc(1, sizeof(char));
-	
-	if(arr->type == AST_SYMBOL && arr->symbol->type == 103)
+  char* lable = (char*) calloc(1, sizeof(char));
+	if(arr->type == AST_PARAM)
 	{
-       
-	        if(arr->symbol)
+	  if(arr->son[0]->type == AST_STRING)
 		{
-	        strcpy(lable, ".LC");
-	        fprintf(fout, "\t.section\t .rodata\n%s%d:\n\t.string %s \n", lable, numLC ,arr->symbol->text);
-            	numLC +=1;          
-        	}
+	    strcpy(lable, ".LC");
+	    fprintf(fout, "\t.section\t .rodata\n%s%d:\n\t.string %s \n", lable, numLC ,arr->son[0]->symbol->text);
+      	numLC +=1;          
+   	}
         	
 	}
 }

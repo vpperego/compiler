@@ -3,8 +3,6 @@ a: long = 444;
 
 (long) main()
 {
-  a = a || a;
-  a = a && a;
-  //print "",a;
+  print "teste"
  //return a;
 }

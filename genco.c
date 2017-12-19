@@ -112,6 +112,7 @@ void tacPrintSingle(TAC *tac){
     case TAC_IFZ: fprintf(stderr, "TAC_IFZ"); break;
     case TAC_MOVE: fprintf(stderr, "TAC_MOVE"); break;
     case TAC_LABEL: fprintf(stderr, "TAC_LABEL"); break;
+    case TAC_PRINT: fprintf(stderr, "TAC_PRINT"); break;
     default: fprintf(stderr, "TAC_UNKNOWN"); break;
   }
 
@@ -166,7 +167,9 @@ TAC* tacGenerator(AST * node){
     case AST_ATRIB_ARRAY: return tacJoin(tacJoin(code[0],code[1]),
           tacCreate(TAC_MOV_IND,node->symbol,code[0]?code[0]->res:0,code[1]?code[1]->res:0)); break;
     case AST_READ: return tacCreate(TAC_READ, node->symbol, 0, 0); break;
-    case AST_PRINT: return tacJoin(tacJoin( tacCreate(TAC_BEGIN_PRINT, node->symbol, 0, 0), code[0] ), tacCreate(TAC_END_PRINT, node->symbol, makeTemp(), 0));break;
+    case AST_PRINT: 
+    return tacJoin(tacCreate(TAC_PRINT, code[0]?code[0]->res:0, 0, 0), code[1]); break;
+    //return tacJoin(tacJoin( tacCreate(TAC_BEGIN_PRINT, node->symbol, 0, 0), code[0] ), tacCreate(TAC_END_PRINT, node->symbol, makeTemp(), 0));break;
     case AST_RETURN: return tacJoin(code[0], tacCreate(TAC_RETURN, node->symbol, 0, 0)); break;
     case AST_IF: return makeIfThen(code[0], code[1]); break;
     case AST_IF_ELSE: return makeIfThenElse(code[0], code[1], code[2]); break;
@@ -454,6 +457,29 @@ void writeCode(TAC *code, FILE * assemblyCode){
       "\tcall	__isoc99_scanf\n", code->res->text); 
     }
 
+    else if(code->type == TAC_MOV_IND){
+      fprintf(assemblyCode, "##TAC_MOV_IND\n"
+      "\tmovl	_%s, %%eax\n"
+      "\tmovl	_%s(%%rip), %%edx\n"
+      "\tcltq\n"
+      "\tmovl	%%edx, _%s(,%%rax,4)\n", code->op1->text, code->op2->text, code->res->text);
+    }
+
+    else if(code->type == TAC_PRINT){
+      if(code->res->text[0] == '\"'){ 
+        printf("STRING\n");
+        fprintf(assemblyCode, "\tmovl	$.LC%d, %%edi\n"
+        "\tmovl	$0, %eax\n"
+        "\tcall	printf\n", lableLC); 
+        lableLC++; 
+      } else{			
+        printf("VARIAVEL\n");				
+        fprintf(assemblyCode, "\tmovl	_%s(%%rip), %%eax\n" 
+        "\tmovl	%%eax, %%esi\n"
+        "\tmovl	$.LC0, %%edi\n"
+        "\tcall	printf\n", code->res->text); 
+      }
+    }
 
     writeCode(code->next, assemblyCode);
 
