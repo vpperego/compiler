@@ -1,5 +1,13 @@
 #include "genco.h"
 
+int LFBid, LFEid = 0;
+int labelNmbr = 2;
+int lableLC = 2;
+char parReg[6][4]  = {{"edi\0"}, {"esi\0"},{"edx\0"}, {"ecx\0"}, {"r8d\0"}, {"r9d\0"}};
+int parNmbr1 = 0, parNmbr2 = 0;
+int aux = 0;
+
+
 TAC* makeFuncDec(TAC* type, TAC* params, TAC* cmdBlock, HASH_NODE *symbol);
 TAC* makeIfThen(TAC* code0, TAC* code1);
 TAC* makeIfThenElse(TAC* code0, TAC* code1, TAC* code2);
@@ -256,11 +264,11 @@ TAC* makeFunction(TAC* symbol, TAC* par, TAC* code)
 */
 void writeCode(TAC *code, FILE * assemblyCode){
   if(!code) return;
-  int LFBid, LFEid = 0;
+
 
    if(code->type == TAC_BEGIN_FUN){
-    printf("Entrou begin");
-     fprintf(assemblyCode, "\n\t.globl %s\n"
+     fprintf(assemblyCode, "##TAC_BEGIN_FUN# \n"
+                           "\n\t.globl %s\n"
                            "\t.type %s, @function\n%s:\n.LFB%d:\n"
                            "\t.cfi_startproc\n\tpushq	%%rbp\n"
                            "\t.cfi_def_cfa_offset 16\n"
@@ -270,7 +278,8 @@ void writeCode(TAC *code, FILE * assemblyCode){
      code->res->text,code->res->text,code->res->text, LFBid);
      LFBid++;
     }else if(code->type == TAC_END_FUN){
-      fprintf(assemblyCode, "\tpopq	%%rbp\n"
+      fprintf(assemblyCode, "##TAC_END_FUN# \n"
+                            "\tpopq	%%rbp\n"
                             "\t.cfi_def_cfa 7, 8\n"
                             "\tret\n"
                             "\t.cfi_endproc\n"
@@ -279,7 +288,8 @@ void writeCode(TAC *code, FILE * assemblyCode){
       LFEid, code->res->text,code->res->text );
       LFEid++;
     }else if(code->type == TAC_RETURN){
-      fprintf(assemblyCode, "\tret\n");
+      
+      fprintf(assemblyCode, "## TAC_RETURN\n\tret\n");
     }else if (code->type == TAC_END_PRINT){
       fprintf(assemblyCode, "\tmovl	$.%s, %%edi\n"
               "\tmovl	$0, %%eax\n"
@@ -287,29 +297,139 @@ void writeCode(TAC *code, FILE * assemblyCode){
     }
     else if(code->type == TAC_MOVE){
       fprintf(assemblyCode, "\tmovl	_%s(%%rip), %%eax\n"
-      "\tnmovl	%%eax, _%s(%%rip)\n" , code->op1->text, code->res->text);
+      "\tmovl	%%eax, _%s(%%rip)\n" , code->op1->text, code->res->text);
     }
     else if(code->type == TAC_ADD){
       fprintf(assemblyCode,
-        "\t## TAC_ADD\n"
+        "## TAC_ADD\n"
         "\tmovl	_%s(%%rip), %%edx\n"
         "\tmovl	_%s(%%rip), %%eax\n"
         "\taddl	%%eax, %%edx\n"
         "\tmovl	%%edx, _%s(%%rip)\n", code->op1->text,code->op2->text,code->res->text);
     }
     else if(code->type == TAC_SUB){
-      fprintf(assemblyCode, "\tmovl	_%s(%%rip), %%edx\n"
+      
+      fprintf(assemblyCode, "## TAC_SUB\n"
+      "\tmovl	_%s(%%rip), %%edx\n"
       "\tmovl	_%s(%%rip), %%eax\n"
       "\tsubl	%%eax, %%edx\n"
       "\tmovl	%%edx, _%s(%%rip)\n", code->op1->text,code->op2->text,code->res->text);
     }
     else if(code->type == TAC_DIV){
-      fprintf(assemblyCode, "\tmovl	_%s(%%rip), %%eax\n"
+      
+      fprintf(assemblyCode, "## TAC_DIV\n"
+      "\tmovl	_%s(%%rip), %%eax\n"
       "\tmovl	_%s(%%rip), %%ecx\n"
       "\tcltd\n"
       "\tidivl	%%ecx\n"
       "\tmovl	%%eax, _%s(%%rip)\n", code->op1->text,code->op2->text,code->res->text); 
     }
+    else if(code->type == TAC_MUL){
+ 
+      fprintf(assemblyCode,  "## TAC_MUL\n"
+      "\tmovl	_%s(%%rip), %%edx\n"
+      "\tmovl	_%s(%%rip), %%eax\n"       
+      "\timull %%eax, %%edx\n"
+      "\tmovl	%%edx, _%s(%%rip)\n", 
+      code->op1->text,code->op2->text,code->res->text);
+     
+    }
+    else if(code->type == TAC_EQ){
+      fprintf(assemblyCode,"## TAC_EQ\n"
+      "\tmovl	_%s(%%rip), %%edx\n"
+      "\tmovl	_%s(%%rip), %%eax\n"
+      "\tcmpl	%%eax, %%edx\n"
+      "\tsete	%%al\n"
+      "\tmovzbl	%%al, %%eax\n"
+      "\tmovl	%%eax, _%s(%%rip)\n", code->op1->text,code->op2->text,code->res->text);
+    }
+    else if(code->type == TAC_NE){
+      fprintf(assemblyCode, "## TAC_NE\n"
+      "\tmovl	_%s(%%rip), %%edx\n"
+      "\tmovl	_%s(%%rip), %%eax\n"
+      "\tcmpl	%%eax, %%edx\n"
+      "\tsetne	%%al\n"
+      "\tmovzbl	%%al, %%eax\n"
+      "\tmovl	%%eax, _%s(%%rip)\n", code->op1->text,code->op2->text,code->res->text);
+    } 
+    else if(code->type == TAC_NOT){
+
+    }
+    else if(code->type == TAC_OR){
+      fprintf(assemblyCode, "##TAC_OR\n"
+      "\tmovl	_%s(%%rip), %%eax\n"
+      "\ttestl	%%eax, %%eax\n"
+      "\tjne	.L%d\n"
+      "\tmovl	_%s(%%rip), %%eax\n"
+      "\ttestl	%%eax, %%eax\n"
+      "\tje	.L%d\n"
+      ".L%d:\n"
+      "\tmovl	$1, %%eax\n" 
+      "\tjmp	.L%d\n"
+      ".L%d:\n"
+      "\tmovl	$0, %%eax\n" 
+      ".L%d:\n"
+      "\tmovl	%%eax, _%s(%%rip)\n", code->op1->text, labelNmbr, code->op2->text, labelNmbr+1, labelNmbr, labelNmbr+2, labelNmbr+1, labelNmbr+2, code->res->text); 
+      labelNmbr += 3;
+    }
+
+    else if(code->type == TAC_AND){
+      fprintf(assemblyCode, "##TAC_AND\n"
+      "\tmovl	_%s(%%rip), %%eax\n"
+      "\ttestl	%%eax, %%eax\n"
+      "\tje	.L%d\n"
+      "\tmovl	_%s(%%rip), %%eax\n"
+      "\ttestl	%%eax, %%eax\n"
+      "\tje	.L%d\n"
+      "\tmovl	$1, %%eax\n"  
+      "\tjmp	.L%d\n"
+      ".L%d:\n"
+      "\tmovl	$0, %%eax\n" 
+      ".L%d:\n"
+      "\tmovl	%%eax, _%s(%%rip)\n", code->op1->text, labelNmbr, code->op2->text, labelNmbr, labelNmbr+1, labelNmbr, labelNmbr+1, code->res->text);
+      labelNmbr += 2; 
+    }
+
+    else if(code->type == TAC_MORE){
+      fprintf(assemblyCode, "##TAC_MORE \n"
+      "\tmovl	_%s(%%rip), %%edx\n"
+      "\tmovl	_%s(%%rip), %%eax\n"
+      "\tcmpl	%%eax, %%edx\n"
+      "\tsetg	%%al\n"
+      "\tmovzbl	%%al, %%eax\n"
+      "\tmovl	%%eax, _%s(%%rip)\n", code->op1->text, code->op2->text, code->res->text); 
+    }
+
+    else if(code->type == TAC_LESS){
+      fprintf(assemblyCode, "##TAC_LESS"
+      "\tmovl	_%s(%%rip), %%edx\n"
+      "\tmovl	_%s(%%rip), %%eax\n"
+      "\tcmpl	%%eax, %%edx\n"
+      "\tsetl	%%al\n"
+      "\tmovzbl	%%al, %%eax\n"
+      "\tmovl	%%eax, _%s(%%rip)\n", code->op1->text, code->op2->text, code->res->text);
+    }
+
+    else if(code->type == TAC_GE){
+      fprintf(assemblyCode, "##TAC_GE \n"
+      "\tmovl	_%s(%%rip), %%edx\n"
+      "\tmovl	_%s(%%rip), %%eax\n"
+      "\tcmpl	%%eax, %%edx\n"
+      "\tsetge	%%al\n"
+      "\tmovzbl	%%al, %%eax\n"
+      "\tmovl	%%eax, _%s(%%rip)\n", code->op1->text, code->op2->text, code->res->text);
+    }
+
+    else if(code->type == TAC_LE){
+      fprintf(assemblyCode, "\tmovl	_%s(%%rip), %%edx\n"
+      "\tmovl	_%s(%%rip), %%eax\n"
+      "\tcmpl	%%eax, %%edx\n"
+      "\tsetle	%%al\n"
+      "\tmovzbl	%%al, %%eax\n"
+      "\tmovl	%%eax, _%s(%%rip)\n", code->op1->text, code->op2->text, code->res->text);
+    }
+
+
 
 
     writeCode(code->next, assemblyCode);
