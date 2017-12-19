@@ -1,8 +1,28 @@
-a: long = 444;
-
+a: long = 0;
+b: long = 100;
 
 (long) main()
 {
-  print "teste"
+  print "Digite um numero \n";
+  read > a;
+  
+  if(a>b) then {
+    print "\nSeu numero e maior que 100 \n";
+    print " ", a;
+    a = a + 1000;
+    print "\nSeu numero foi somado com 1000 \n";
+    print " ", a;
+    print "/n";
+
+  }
+  else {
+    print "\nSeu numero e menor que 100 \n";
+    a = a / a;
+    print "\nSeu numero foi dividido \n";
+    print " ", a;
+    print "/n";
+  }
+
+
  //return a;
 }

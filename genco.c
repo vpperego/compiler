@@ -467,16 +467,17 @@ void writeCode(TAC *code, FILE * assemblyCode){
 
     else if(code->type == TAC_PRINT){
       if(code->res->text[0] == '\"'){ 
-        printf("STRING\n");
-        fprintf(assemblyCode, "\tmovl	$.LC%d, %%edi\n"
-        "\tmovl	$0, %eax\n"
+        fprintf(assemblyCode, "##TAC_PRINT \n"
+        "\tmovl	$.LC%d, %%edi\n"
+        "\tmovl	$0, %%eax\n"
         "\tcall	printf\n", lableLC); 
         lableLC++; 
       } else{			
-        printf("VARIAVEL\n");				
-        fprintf(assemblyCode, "\tmovl	_%s(%%rip), %%eax\n" 
+        fprintf(assemblyCode, "##TAC_PRINT \n"
+        "\tmovl	_%s(%%rip), %%eax\n" 
         "\tmovl	%%eax, %%esi\n"
         "\tmovl	$.LC0, %%edi\n"
+        "\tmovl	$0, %%eax\n"
         "\tcall	printf\n", code->res->text); 
       }
     }

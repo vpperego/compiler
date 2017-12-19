@@ -548,6 +548,7 @@ void asmAddArray(AST* arr)
 }
 
 int numLC = 2;
+int first = 1;
 
 void asmAddPrint(AST* arr)
 {
@@ -556,6 +557,12 @@ void asmAddPrint(AST* arr)
   char* lable = (char*) calloc(1, sizeof(char));
 	if(arr->type == AST_PARAM)
 	{
+    if(first){
+      fprintf(fout, "\t.section\t .rodata\n");
+      fprintf(fout, ".LC0:\n\t.string \"%%d\" \n");
+      first = 0;
+    }
+
 	  if(arr->son[0]->type == AST_STRING)
 		{
 	    strcpy(lable, ".LC");
