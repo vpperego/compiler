@@ -277,7 +277,8 @@ void writeCode(TAC *code, FILE * assemblyCode){
                            "\t.cfi_def_cfa_register 6\n",
      code->res->text,code->res->text,code->res->text, LFBid);
      LFBid++;
-    }else if(code->type == TAC_END_FUN){
+    }
+    else if(code->type == TAC_END_FUN){
       fprintf(assemblyCode, "##TAC_END_FUN# \n"
                             "\tpopq	%%rbp\n"
                             "\t.cfi_def_cfa 7, 8\n"
@@ -287,10 +288,12 @@ void writeCode(TAC *code, FILE * assemblyCode){
                             "\t.size	%s, .-%s\n",
       LFEid, code->res->text,code->res->text );
       LFEid++;
-    }else if(code->type == TAC_RETURN){
-      
-      fprintf(assemblyCode, "## TAC_RETURN\n\tret\n");
-    }else if (code->type == TAC_END_PRINT){
+    }
+    else if(code->type == TAC_RETURN){
+      fprintf(assemblyCode, "## TAC_RETURN\n"
+        "\tmovl	_%s(%%rip), %%eax\n" , code->op1->text);
+    }
+    else if (code->type == TAC_END_PRINT){
       fprintf(assemblyCode, "\tmovl	$.%s, %%edi\n"
               "\tmovl	$0, %%eax\n"
               "\tcall	printf\n",code->op1->text);
@@ -372,7 +375,6 @@ void writeCode(TAC *code, FILE * assemblyCode){
       "\tmovl	%%eax, _%s(%%rip)\n", code->op1->text, labelNmbr, code->op2->text, labelNmbr+1, labelNmbr, labelNmbr+2, labelNmbr+1, labelNmbr+2, code->res->text); 
       labelNmbr += 3;
     }
-
     else if(code->type == TAC_AND){
       fprintf(assemblyCode, "##TAC_AND\n"
       "\tmovl	_%s(%%rip), %%eax\n"
@@ -389,7 +391,6 @@ void writeCode(TAC *code, FILE * assemblyCode){
       "\tmovl	%%eax, _%s(%%rip)\n", code->op1->text, labelNmbr, code->op2->text, labelNmbr, labelNmbr+1, labelNmbr, labelNmbr+1, code->res->text);
       labelNmbr += 2; 
     }
-
     else if(code->type == TAC_MORE){
       fprintf(assemblyCode, "##TAC_MORE \n"
       "\tmovl	_%s(%%rip), %%edx\n"
@@ -399,7 +400,6 @@ void writeCode(TAC *code, FILE * assemblyCode){
       "\tmovzbl	%%al, %%eax\n"
       "\tmovl	%%eax, _%s(%%rip)\n", code->op1->text, code->op2->text, code->res->text); 
     }
-
     else if(code->type == TAC_LESS){
       fprintf(assemblyCode, "##TAC_LESS"
       "\tmovl	_%s(%%rip), %%edx\n"
@@ -409,7 +409,6 @@ void writeCode(TAC *code, FILE * assemblyCode){
       "\tmovzbl	%%al, %%eax\n"
       "\tmovl	%%eax, _%s(%%rip)\n", code->op1->text, code->op2->text, code->res->text);
     }
-
     else if(code->type == TAC_GE){
       fprintf(assemblyCode, "##TAC_GE \n"
       "\tmovl	_%s(%%rip), %%edx\n"
@@ -419,7 +418,6 @@ void writeCode(TAC *code, FILE * assemblyCode){
       "\tmovzbl	%%al, %%eax\n"
       "\tmovl	%%eax, _%s(%%rip)\n", code->op1->text, code->op2->text, code->res->text);
     }
-
     else if(code->type == TAC_LE){
       fprintf(assemblyCode, "\tmovl	_%s(%%rip), %%edx\n"
       "\tmovl	_%s(%%rip), %%eax\n"
@@ -428,8 +426,33 @@ void writeCode(TAC *code, FILE * assemblyCode){
       "\tmovzbl	%%al, %%eax\n"
       "\tmovl	%%eax, _%s(%%rip)\n", code->op1->text, code->op2->text, code->res->text);
     }
-
-
+    else if(code->type == TAC_FUNC){
+      fprintf(assemblyCode, "##TAC_FUNCALL \n"
+      "\tcall	%s\n"
+      "\tmovl	%%eax, _%s(%%rip)\n" , code->op1->text, code->res->text); parNmbr1 = 0;
+    }
+    else if(code->type == TAC_LABEL){
+      fprintf(assemblyCode, "##TAC_LABEL \n"
+        "\t.%s:\n" , code->res->text);
+    }
+    else if(code->type == TAC_JMP){
+      fprintf(assemblyCode, "##TAC_LABEL \n"
+        "\tjmp	.%s\n" , code->res->text);
+    }
+    else if(code->type == TAC_IFZ){
+      fprintf(assemblyCode, "##TAC_IFZ \n"
+      "\tmovl	_%s(%%rip), %%eax\n"
+      "\ttestl	%%eax, %%eax\n"
+      "\tjne	.L%d\n"
+      "\tjmp	.%s\n"
+      ".L%d:", code->op1->text, labelNmbr, code->res->text, labelNmbr); labelNmbr++;
+    }
+    else if(code->type == TAC_READ){
+      fprintf(assemblyCode, "##TAC_READ \n"
+      "\tmovl	$_%s, %%esi\n"
+      "\tmovl	$.LC0, %%edi\n"
+      "\tcall	__isoc99_scanf\n", code->res->text); 
+    }
 
 
     writeCode(code->next, assemblyCode);
